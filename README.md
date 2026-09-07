@@ -104,3 +104,11 @@ master ───> rama R1A1 ───> desarrollo progresivo ───> commits 
    - **Build Command:** `pip install -r requirements.txt`
    - **Start Command:** `gunicorn app:app`
 4. Desplegar y verificar que todas las páginas del menú sean navegables.
+
+### 🌐 URL de Producción
+
+La aplicación desplegada en Render está disponible en:
+
+**https://data-with-roots-1.onrender.com**
+
+> **Nota:** Render asigna el sufijo `-1` automáticamente porque el nombre `data-with-roots` ya estaba registrado en su plataforma. Usa **siempre** esta URL con el `-1`. El dominio sin ese sufijo (`https://data-with-roots.onrender.com`) **no está disponible**.
