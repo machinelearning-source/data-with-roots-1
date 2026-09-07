@@ -112,3 +112,21 @@ La aplicación desplegada en Render está disponible en:
 **https://data-with-roots-1.onrender.com**
 
 > **Nota:** Render asigna el sufijo `-1` automáticamente porque el nombre `data-with-roots` ya estaba registrado en su plataforma. Usa **siempre** esta URL con el `-1`. El dominio sin ese sufijo (`https://data-with-roots.onrender.com`) **no está disponible**.
+
+### 🔁 Auto-Deploy
+
+- El servicio Render está conectado al repositorio **`machinelearning-source/data-with-roots-1`** (rama `main`).
+- Cada **push a `main`** dispara automáticamente un nuevo despliegue (*Auto-Deploy*).
+- Configuración del servicio:
+  - **Build Command:** `pip install -r requirements.txt`
+  - **Start Command:** `gunicorn app:app`
+  - **Runtime:** `python-3.12.7`
+
+### 🥶 Nota sobre el plan gratuito (spin-down)
+
+El plan **free** de Render **duerme** la instancia tras un período de inactividad. Al volver a visitar el sitio, la **primera carga puede tardar ~50 segundos** mientras "despierta". No es un error.
+
+Consejos:
+1. **Esperar** la primera carga (una vez despierto, responde normalmente).
+2. **Keep-alive gratuito:** usar [UptimeRobot](https://uptimerobot.com) para sondear la URL cada 5 minutos y evitar que se duerma.
+3. **Upgrade (opcional):** el plan con pago elimina el spin-down.
