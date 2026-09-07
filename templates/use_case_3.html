@@ -1,12 +1,12 @@
 {% extends "base.html" %}
-{% block title %}Use Case 3 - Demand Prediction{% endblock %}
+{% block title %}Use Case 3 - Retail Demand Forecasting{% endblock %}
 {% block content %}
 
 <header class="hero-section">
     <div class="container">
         <span class="hero-tag">Use Case 3</span>
-        <h1>Demand <span>Prediction</span> in Retail</h1>
-        <p>ML to optimize inventory and customer satisfaction in retail chains.</p>
+        <h1>Retail Demand <span>Forecasting</span></h1>
+        <p>Machine Learning to optimize supply chain inventory replenishment and maximize omnichannel customer fulfillment.</p>
     </div>
 </header>
 
@@ -16,15 +16,15 @@
         <div class="col-lg-8">
             <div class="card-dark h-100">
                 <h3>Problem Context</h3>
-                <p>Retail chains face the constant challenge of balancing inventory: having enough stock to meet demand without incurring excessive storage costs. Lack of products leads to customer loss, while overstock leads to economic losses from expiration and obsolescence.</p>
-                <p>The problem is: <strong>How to predict future product demand</strong> to optimize purchases, reduce waste and maximize customer satisfaction.</p>
+                <p>Retail chains constantly struggle to balance warehouse stock: holding insufficient inventory causes stockouts and lost revenue, whereas holding excess inventory causes capital tie-up, warehouse congestion, and inventory depreciation through spoilage or obsolescence.</p>
+                <p>The core challenge is: <strong>How to accurately forecast future SKU-level consumer demand</strong> across dynamic regional markets to optimize purchase orders, reduce waste, and maximize customer satisfaction.</p>
             </div>
         </div>
         <div class="col-lg-4">
             <div class="card-dark h-100">
                 <div class="card-icon icon-green mx-auto">🛒</div>
-                <h4 class="text-center">ML Type</h4>
-                <p class="text-center"><strong>Supervised Learning</strong> - Regression</p>
+                <h4 class="text-center">ML Paradigm</h4>
+                <p class="text-center"><strong>Supervised Learning</strong> - Time Series Regression</p>
                 <div class="text-center mt-3">
                     <span class="pill">Time Series</span>
                     <span class="pill">XGBoost</span>
@@ -37,31 +37,31 @@
     <div class="row g-4 mt-3">
         <div class="col-md-6">
             <div class="card-dark h-100">
-                <h4 style="color: var(--primary-light);">Data that could be used</h4>
+                <h4 style="color: var(--primary-light);">Data Utilized</h4>
                 <ul class="features-list">
-                    <li>Sales history by product and store.</li>
-                    <li>Previous price and promotion data.</li>
-                    <li>Seasonal variables and calendar (holidays).</li>
-                    <li>External weather data.</li>
-                    <li>Competitor prices and market events.</li>
+                    <li>Granular point-of-sale (POS) transactional history by product and store.</li>
+                    <li>Historical pricing dynamics, marketing campaigns, and seasonal discounts.</li>
+                    <li>Calendar and holiday variables (paydays, regional festivals, weekends).</li>
+                    <li>External macro variables (regional weather forecasts, local foot-traffic data).</li>
+                    <li>Competitor price indexes and supply chain lead times.</li>
                 </ul>
             </div>
         </div>
         <div class="col-md-6">
             <div class="card-dark h-100">
-                <h4 style="color: var(--primary-light);">What the model should predict</h4>
+                <h4 style="color: var(--primary-light);">What the Model Predicts</h4>
                 <ul class="features-list">
-                    <li><strong>Demand quantity:</strong> Expected sales units per product.</li>
-                    <li><strong>Period:</strong> Daily, weekly or monthly prediction.</li>
-                    <li><strong>Alerts:</strong> When demand will exceed current stock capacity.</li>
+                    <li><strong>Expected Unit Sales:</strong> Projected volume of units sold per item across daily and weekly intervals.</li>
+                    <li><strong>Safety Stock Thresholds:</strong> Dynamic reorder points adapted to current demand volatility.</li>
+                    <li><strong>Stockout Warnings:</strong> Predictive alerts flagging SKUs at risk of running out before scheduled deliveries.</li>
                 </ul>
             </div>
         </div>
     </div>
 
     <div class="card-dark mt-4">
-        <h4 style="color: var(--success);">Potential benefit</h4>
-        <p>Reduce losses from overstock and stockouts by 20-30%, improve customer satisfaction by always having products available, optimize the supply chain and reduce waste of perishable products.</p>
+        <h4 style="color: var(--success);">Potential Benefits</h4>
+        <p>Reduces storage holding costs and product write-downs by 25% to 35%, significantly curtails grocery food spoilage, elevates on-shelf availability to over 98%, and optimizes working capital allocation across distribution centers.</p>
     </div>
 
 </div>

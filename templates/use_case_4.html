@@ -1,12 +1,12 @@
 {% extends "base.html" %}
-{% block title %}Use Case 4 - Autonomous Driving{% endblock %}
+{% block title %}Use Case 4 - Autonomous Vehicles{% endblock %}
 {% block content %}
 
 <header class="hero-section">
     <div class="container">
         <span class="hero-tag">Use Case 4</span>
         <h1>Autonomous <span>Vehicles</span></h1>
-        <p>ML for autonomous driving: perception, decision-making and control in real-time.</p>
+        <p>Machine Learning for self-driving vehicular perception, environmental modeling, and real-time motion control.</p>
     </div>
 </header>
 
@@ -16,19 +16,19 @@
         <div class="col-lg-8">
             <div class="card-dark h-100">
                 <h3>Problem Context</h3>
-                <p>Traffic accidents cause more than 1.35 million deaths per year worldwide, and 94% are due to human error. Autonomous vehicles promise to revolutionize road safety through intelligent systems that can perceive, decide and act better than a human driver.</p>
-                <p>The problem is: <strong>How to make a vehicle navigate safely and autonomously</strong> in complex environments, recognizing objects, predicting behaviors and making decisions in real-time.</p>
+                <p>Global road traffic accidents result in over 1.3 million fatalities each year, with approximately 94% attributed directly to human driver error. Autonomous vehicle technology aims to revolutionize transport safety and urban mobility through robotic intelligence that perceives, plans, and acts faster and more reliably than human reflexes.</p>
+                <p>The core challenge is: <strong>How to navigate complex, unpredictable urban environments safely</strong> by fusing high-bandwidth sensory inputs, anticipating multi-agent pedestrian behavior, and issuing low-latency steering and throttle commands.</p>
             </div>
         </div>
         <div class="col-lg-4">
             <div class="card-dark h-100">
                 <div class="card-icon icon-yellow mx-auto">🚗</div>
-                <h4 class="text-center">ML Type</h4>
-                <p class="text-center"><strong>Reinforcement Learning</strong> + Supervised</p>
+                <h4 class="text-center">ML Paradigm</h4>
+                <p class="text-center"><strong>Reinforcement Learning</strong> + <strong>Supervised Perception</strong></p>
                 <div class="text-center mt-3">
                     <span class="pill">Computer Vision</span>
                     <span class="pill">Sensor Fusion</span>
-                    <span class="pill">RL</span>
+                    <span class="pill">Deep RL</span>
                 </div>
             </div>
         </div>
@@ -37,31 +37,31 @@
     <div class="row g-4 mt-3">
         <div class="col-md-6">
             <div class="card-dark h-100">
-                <h4 style="color: var(--primary-light);">Data that could be used</h4>
+                <h4 style="color: var(--primary-light);">Data Utilized</h4>
                 <ul class="features-list">
-                    <li>LiDAR sensors and 360-degree cameras.</li>
-                    <li>GPS, IMU and speed data.</li>
-                    <li>High-definition environment maps.</li>
-                    <li>Real-time traffic data.</li>
-                    <li>Expert human driver history.</li>
+                    <li>Multi-spectral 360-degree video feeds and high-density 3D LiDAR point clouds.</li>
+                    <li>Radar Doppler velocity readings, inertial measurement unit (IMU) telemetry, and GPS.</li>
+                    <li>High-definition (HD) centimeter-accurate vector maps.</li>
+                    <li>V2X (Vehicle-to-Everything) connected infrastructure telemetry.</li>
+                    <li>Extensive simulation logs of edge-case driving maneuvers.</li>
                 </ul>
             </div>
         </div>
         <div class="col-md-6">
             <div class="card-dark h-100">
-                <h4 style="color: var(--primary-light);">What the model should predict</h4>
+                <h4 style="color: var(--primary-light);">What the Model Predicts</h4>
                 <ul class="features-list">
-                    <li><strong>Detection:</strong> Identify pedestrians, vehicles, signs and obstacles.</li>
-                    <li><strong>Classification:</strong> Type and behavior of each detected object.</li>
-                    <li><strong>Decision:</strong> Optimal action: brake, accelerate, turn, change lane.</li>
+                    <li><strong>3D Object Detection & Tracking:</strong> Bounding boxes, speeds, and trajectories of surrounding vehicles, cyclists, and pedestrians.</li>
+                    <li><strong>Intent & Trajectory Forecasting:</strong> Projected movement pathways of intersecting traffic over a 5-second horizon.</li>
+                    <li><strong>Optimal Motion Policy:</strong> Real-time steering angle, acceleration curve, and braking profile.</li>
                 </ul>
             </div>
         </div>
     </div>
 
     <div class="card-dark mt-4">
-        <h4 style="color: var(--success);">Potential benefit</h4>
-        <p>Drastically reduce traffic accidents caused by human error, improve transportation efficiency by reducing congestion, offer mobility to elderly or disabled people, and optimize fuel or electricity consumption.</p>
+        <h4 style="color: var(--success);">Potential Benefits</h4>
+        <p>Eliminates up to 90% of traffic collisions caused by distracted or impaired human driving, significantly relieves roadway congestion through coordinated traffic flow, reduces carbon emissions via optimized eco-driving profiles, and unlocks independent mobility for elderly and disabled individuals.</p>
     </div>
 
 </div>

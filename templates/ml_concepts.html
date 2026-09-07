@@ -6,140 +6,145 @@
     <div class="container">
         <span class="hero-tag">Machine Learning</span>
         <h1>Machine Learning <span>Concepts</span></h1>
-        <p>Understanding how machines acquire the ability to learn from data.</p>
+        <p>Understanding how machines acquire the ability to learn and generalize from empirical data.</p>
     </div>
 </header>
 
 <div class="container mt-5 mb-section">
 
+    <!-- 1. What is Machine Learning? -->
     <div class="mb-5">
-        <span class="section-badge"># Basic Concept</span>
+        <span class="section-badge"># Core Concept</span>
         <h2 class="section-title">What is Machine Learning?</h2>
     </div>
 
     <div class="card-dark mb-4">
-        <p><strong>Machine Learning (ML)</strong> is a fundamental branch of <strong>Artificial Intelligence (AI)</strong> that gives computers the ability to learn and improve their performance on specific tasks through experience and data analysis.</p>
+        <p><strong>Machine Learning (ML)</strong> is a foundational subfield of <strong>Artificial Intelligence (AI)</strong> focused on developing algorithms and statistical models that enable computer systems to learn from data, identify underlying patterns, and improve their performance on specific tasks through experience, without being explicitly programmed.</p>
 
         <div class="concept-highlight">
-            "A computer program learns from experience (E) with respect to some class of tasks (T) and performance measure (P), if its performance on tasks in T, measured by P, improves with experience E."
+            "A computer program is said to learn from experience E with respect to some class of tasks T and performance measure P, if its performance at tasks in T, as measured by P, improves with experience E."
             <div style="font-size: 0.85rem; margin-top: 6px; color: var(--primary-light); font-style: normal; font-weight: 600;">- Tom M. Mitchell (1997)</div>
         </div>
     </div>
 
+    <!-- 2. Main Purpose of ML -->
     <div class="mb-5">
-        <span class="section-badge"># Main Purpose</span>
-        <h2 class="section-title">What is the purpose of Machine Learning?</h2>
+        <span class="section-badge"># Primary Purpose</span>
+        <h2 class="section-title">What is the Purpose of Machine Learning?</h2>
     </div>
 
     <div class="card-dark mb-4">
-        <p>The main purpose of Machine Learning is to <strong>automate decision-making</strong> based on data, without the need to program explicit rules for each scenario. It allows systems to:</p>
+        <p>The primary purpose of Machine Learning is to <strong>automate decision-making and pattern extraction</strong> from complex datasets where traditional deterministic programming would be impractical or unscalable. It enables modern systems to:</p>
         <ul class="features-list mt-3">
-            <li>Identify complex patterns in large volumes of data.</li>
-            <li>Make predictions about new, never-before-seen data.</li>
-            <li>Automatically adapt when data changes.</li>
-            <li>Solve problems too complex for traditional programming.</li>
+            <li>Discover nonlinear relationships and latent patterns within high-dimensional datasets.</li>
+            <li>Generate real-time predictions and inferences on unseen observations.</li>
+            <li>Adapt autonomously and continuously as new data streams arrive.</li>
+            <li>Solve complex cognitive tasks such as speech recognition, visual perception, and predictive logistics.</li>
         </ul>
     </div>
 
+    <!-- 3. Pipeline: Data, Training, Models, Predictions -->
     <div class="mb-5">
         <span class="section-badge"># ML Pipeline</span>
-        <h2 class="section-title">Relationship: Data, Training, Models and Predictions</h2>
+        <h2 class="section-title">Relationship: Data, Training, Models, and Predictions</h2>
     </div>
 
     <div class="row g-4 mb-4">
         <div class="col-md-3">
-            <div class="card-dark text-center">
+            <div class="card-dark text-center h-100">
                 <div class="card-icon icon-blue mx-auto">📁</div>
-                <h4>Data</h4>
-                <p>The raw material of ML. Without quality data, learning is not possible.</p>
+                <h4>1. Data</h4>
+                <p>The raw empirical input. Contains independent features and ground-truth observations.</p>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card-dark text-center">
+            <div class="card-dark text-center h-100">
                 <div class="card-icon icon-purple mx-auto">⚙️</div>
-                <h4>Training</h4>
-                <p>Process where the algorithm analyzes data to learn patterns and relationships.</p>
+                <h4>2. Training</h4>
+                <p>The optimization process where the algorithm adjusts internal mathematical parameters to minimize loss.</p>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card-dark text-center">
+            <div class="card-dark text-center h-100">
                 <div class="card-icon icon-green mx-auto">🤖</div>
-                <h4>Model</h4>
-                <p>The result of training: a mathematical function that represents the learned patterns.</p>
+                <h4>3. Model</h4>
+                <p>The resulting artifact: an optimized mathematical function capturing learned relationships.</p>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card-dark text-center">
+            <div class="card-dark text-center h-100">
                 <div class="card-icon icon-yellow mx-auto">🎯</div>
-                <h4>Prediction</h4>
-                <p>The model applies what it learned to new data to generate results or decisions.</p>
+                <h4>4. Prediction</h4>
+                <p>Inference: applying the trained model to new, unseen feature vectors to compute outcomes.</p>
             </div>
         </div>
     </div>
 
     <div class="card-dark mb-4">
         <div class="concept-highlight">
-            Flow: <strong>Raw data</strong> &rarr; <strong>Preprocessing</strong> &rarr; <strong>Training</strong> &rarr; <strong>Trained model</strong> &rarr; <strong>Predictions</strong>
+            Pipeline Workflow: <strong>Raw Data</strong> &rarr; <strong>Preprocessing & Cleaning</strong> &rarr; <strong>Algorithmic Training</strong> &rarr; <strong>Trained Model</strong> &rarr; <strong>Real-time Predictions</strong>
         </div>
     </div>
 
+    <!-- 4. Importance of Data -->
     <div class="mb-5">
-        <span class="section-badge"># Importance</span>
-        <h2 class="section-title">The importance of data in ML</h2>
+        <span class="section-badge"># Critical Asset</span>
+        <h2 class="section-title">The Critical Importance of Data in ML</h2>
     </div>
 
     <div class="card-dark mb-4">
-        <p>Data is the most critical resource in Machine Learning. Its quality directly determines the quality of the model:</p>
+        <p>Data is the single most decisive factor governing the predictive capability of any Machine Learning architecture ("Garbage in, garbage out"). Key dimensions include:</p>
         <div class="row g-3 mt-3">
             <div class="col-md-4">
                 <div class="info-box">
-                    <strong style="color: var(--primary-light);">Volume</strong>
-                    <p class="mb-0 mt-2" style="font-size:0.9rem;">More data allows the model to learn more robust patterns and generalize better.</p>
+                    <strong style="color: var(--primary-light);">Volume & Sample Size</strong>
+                    <p class="mb-0 mt-2" style="font-size:0.9rem;">Larger datasets allow algorithms to capture complex distributions and mitigate overfitting.</p>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="info-box">
-                    <strong style="color: var(--primary-light);">Quality</strong>
-                    <p class="mb-0 mt-2" style="font-size:0.9rem;">Clean, complete, and error-free data produces more reliable models.</p>
+                    <strong style="color: var(--success);">Quality & Integrity</strong>
+                    <p class="mb-0 mt-2" style="font-size:0.9rem;">Data must be free from corrupt values, duplicates, and measurement noise to ensure reliable parameters.</p>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="info-box">
-                    <strong style="color: var(--primary-light);">Relevance</strong>
-                    <p class="mb-0 mt-2" style="font-size:0.9rem;">Selecting the right variables is key for the model to learn meaningful relationships.</p>
+                    <strong style="color: var(--warning);">Representativeness</strong>
+                    <p class="mb-0 mt-2" style="font-size:0.9rem;">The training sample must faithfully reflect the population distribution encountered in production.</p>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- 5. Real-World Applications -->
     <div class="mb-5">
         <span class="section-badge"># Examples</span>
-        <h2 class="section-title">Simple Machine Learning Examples</h2>
+        <h2 class="section-title">Everyday Examples of Machine Learning</h2>
     </div>
 
     <div class="row g-4">
-        <div class="col-md-4">
+        <div class="col-md-6">
             <div class="card-dark">
-                <h4 style="color: var(--primary-light);">Email Spam</h4>
-                <p>Classify emails as spam or non-spam based on content, sender and text patterns.</p>
-                <span class="pill">Classification</span>
-                <span class="pill">Supervised</span>
+                <h4 style="color: var(--primary-light);">📧 Spam Filtering in Email</h4>
+                <p>Supervised text classification algorithms analyze email headers, sender reputations, and keyword vectors to categorize messages as Inbox or Spam.</p>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-6">
             <div class="card-dark">
-                <h4 style="color: var(--primary-light);">Sales Prediction</h4>
-                <p>Estimate future product sales based on historical price, season and marketing data.</p>
-                <span class="pill">Regression</span>
-                <span class="pill">Supervised</span>
+                <h4 style="color: var(--primary-light);">🎬 Recommendation Engines (Netflix / Spotify)</h4>
+                <p>Collaborative filtering and matrix factorization models analyze user watch/listening histories to recommend personalized content.</p>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-6">
             <div class="card-dark">
-                <h4 style="color: var(--primary-light);">Customer Segmentation</h4>
-                <p>Group customers by purchasing behavior to personalize marketing strategies.</p>
-                <span class="pill">Clustering</span>
-                <span class="pill">Unsupervised</span>
+                <h4 style="color: var(--primary-light);">💳 Credit Risk Scoring</h4>
+                <p>Logistic regression and gradient boosted trees predict the probability of loan default based on credit history, debt ratios, and income.</p>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card-dark">
+                <h4 style="color: var(--primary-light);">🚚 Logistics Delivery Duration Estimation</h4>
+                <p>Linear regression models predict parcel arrival times based on travel distance, traffic density, and dispatch variables (as implemented in this project).</p>
             </div>
         </div>
     </div>

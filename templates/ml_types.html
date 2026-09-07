@@ -1,121 +1,151 @@
 {% extends "base.html" %}
-{% block title %}Machine Learning Types{% endblock %}
+{% block title %}Types of Machine Learning{% endblock %}
 {% block content %}
 
 <header class="hero-section">
     <div class="container">
-        <span class="hero-tag">Machine Learning</span>
-        <h1>Machine Learning <span>Types</span></h1>
-        <p>ML algorithms are classified based on the presence of labels in the data and the form of feedback.</p>
+        <span class="hero-tag">Taxonomy & Paradigms</span>
+        <h1>Types of <span>Machine Learning</span></h1>
+        <p>A comprehensive taxonomy: Supervised, Unsupervised, and Reinforcement Learning paradigms.</p>
     </div>
 </header>
 
 <div class="container mt-5 mb-section">
 
-    <div class="row g-4 mb-5">
-
-        <!-- Supervised -->
-        <div class="col-lg-4">
-            <div class="card-dark h-100">
-                <div class="card-icon icon-blue">🏷️</div>
-                <h3>Supervised Learning</h3>
-                <p>The model is trained with <strong>labeled</strong> data: each example includes its correct answer or target value.</p>
+    <!-- 1. Supervised Learning -->
+    <div class="card-dark mb-5">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <span class="badge bg-primary px-3 py-2 mb-2" style="font-size:0.85rem;">Paradigm 1</span>
+                <h2 style="color: var(--primary-light);">Supervised Learning</h2>
+                <p><strong>Definition:</strong> In Supervised Learning, the algorithm is trained on a labeled dataset where each input feature vector is paired with an explicit, known target response (ground truth). The objective is to learn a mapping function capable of predicting the correct output for new, unseen inputs.</p>
+                
+                <h5 class="mt-3 text-light">Main Characteristics:</h5>
                 <ul class="features-list">
-                    <li><strong>Classification:</strong> Predicts discrete categories (spam/no spam, medical diagnosis).</li>
-                    <li><strong>Regression:</strong> Predicts continuous numeric values (house prices, temperature).</li>
-                    <li><strong>Direct supervision:</strong> Calculates the error between the prediction and the actual label.</li>
+                    <li>Requires historical datasets with verified ground truth labels.</li>
+                    <li>Evaluates model performance through explicit loss functions (e.g., Mean Squared Error, Cross-Entropy).</li>
+                    <li>Follows a train-test split validation methodology to assess generalization.</li>
                 </ul>
-                <div class="mt-3">
-                    <span class="pill">Linear Regression</span>
-                    <span class="pill">Random Forest</span>
-                    <span class="pill">SVM</span>
-                    <span class="pill">Neural Networks</span>
+
+                <h5 class="mt-3 text-light">Solvable Problem Categories:</h5>
+                <div class="d-flex gap-2 flex-wrap mt-2">
+                    <span class="pill">Regression (Continuous Targets)</span>
+                    <span class="pill">Classification (Categorical Targets)</span>
+                </div>
+            </div>
+            <div class="col-lg-4 text-center mt-4 mt-lg-0">
+                <div class="p-4" style="background: rgba(67, 97, 238, 0.1); border-radius: 12px; border: 1px solid var(--primary);">
+                    <div style="font-size: 3rem;">🎯</div>
+                    <h5 class="text-white mt-2">Core Algorithms</h5>
+                    <p class="small text-muted mb-0">Linear Regression, Logistic Regression, Random Forest, Support Vector Machines (SVM), XGBoost.</p>
                 </div>
             </div>
         </div>
-
-        <!-- Unsupervised -->
-        <div class="col-lg-4">
-            <div class="card-dark h-100">
-                <div class="card-icon icon-purple">🔍</div>
-                <h3>Unsupervised Learning</h3>
-                <p>The data has <strong>no labels</strong>. The algorithm discovers hidden patterns, groupings or intrinsic structures.</p>
-                <ul class="features-list">
-                    <li><strong>Clustering:</strong> Customer segmentation, document grouping.</li>
-                    <li><strong>Dimensionality Reduction:</strong> Compress variables while maintaining variance (PCA).</li>
-                    <li><strong>Anomaly Detection:</strong> Bank fraud, industrial failures.</li>
-                </ul>
-                <div class="mt-3">
-                    <span class="pill">K-Means</span>
-                    <span class="pill">DBSCAN</span>
-                    <span class="pill">PCA</span>
-                    <span class="pill">Autoencoders</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Reinforcement -->
-        <div class="col-lg-4">
-            <div class="card-dark h-100">
-                <div class="card-icon icon-green">🎮</div>
-                <h3>Reinforcement Learning</h3>
-                <p>An <strong>agent</strong> learns to make optimal decisions by interacting with an environment through <strong>rewards and punishments</strong>.</p>
-                <ul class="features-list">
-                    <li><strong>Exploration vs. Exploitation:</strong> Discover new strategies or exploit known ones.</li>
-                    <li><strong>No direct labels:</strong> Learning is through trial and error.</li>
-                    <li><strong>Applications:</strong> Autonomous driving, video games, robotics.</li>
-                </ul>
-                <div class="mt-3">
-                    <span class="pill">Q-Learning</span>
-                    <span class="pill">DQN</span>
-                    <span class="pill">PPO</span>
-                    <span class="pill">Policy Gradient</span>
-                </div>
-            </div>
-        </div>
-
     </div>
 
-    <div class="mb-5">
-        <span class="section-badge"># Comparison</span>
-        <h2 class="section-title">Comparison Table</h2>
+    <!-- 2. Unsupervised Learning -->
+    <div class="card-dark mb-5">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <span class="badge bg-purple px-3 py-2 mb-2" style="font-size:0.85rem; background: var(--accent);">Paradigm 2</span>
+                <h2 style="color: #c77dff;">Unsupervised Learning</h2>
+                <p><strong>Definition:</strong> In Unsupervised Learning, the algorithm processes unlabeled data without predefined output targets. Its goal is to uncover the inherent structure, groupings, or hidden probability distributions governing the input feature space.</p>
+                
+                <h5 class="mt-3 text-light">Main Characteristics:</h5>
+                <ul class="features-list">
+                    <li>Operates without human annotations or pre-classified labels.</li>
+                    <li>Driven by similarity metrics, distance functions (e.g., Euclidean), and density thresholds.</li>
+                    <li>Essential for exploratory data analysis, market segmentation, and anomaly detection.</li>
+                </ul>
+
+                <h5 class="mt-3 text-light">Solvable Problem Categories:</h5>
+                <div class="d-flex gap-2 flex-wrap mt-2">
+                    <span class="pill">Clustering (K-Means, DBSCAN)</span>
+                    <span class="pill">Dimensionality Reduction (PCA, t-SNE)</span>
+                    <span class="pill">Anomaly Detection (Isolation Forest)</span>
+                </div>
+            </div>
+            <div class="col-lg-4 text-center mt-4 mt-lg-0">
+                <div class="p-4" style="background: rgba(114, 9, 183, 0.1); border-radius: 12px; border: 1px solid var(--accent);">
+                    <div style="font-size: 3rem;">🔍</div>
+                    <h5 class="text-white mt-2">Core Algorithms</h5>
+                    <p class="small text-muted mb-0">K-Means, Hierarchical Clustering, Principal Component Analysis (PCA), Autoencoders, Gaussian Mixtures.</p>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="card-dark" style="overflow-x: auto;">
-        <table class="table-dark-custom">
-            <thead>
-                <tr>
-                    <th>Type</th>
-                    <th>Input Data</th>
-                    <th>Main Objective</th>
-                    <th>Learning Mechanism</th>
-                    <th>Practical Example</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><strong style="color: #4cc9f0;">Supervised</strong></td>
-                    <td>Labeled data (X, y)</td>
-                    <td>Predict label/result for new data</td>
-                    <td>Minimization of error with respect to ground truth</td>
-                    <td>Housing price prediction</td>
-                </tr>
-                <tr>
-                    <td><strong style="color: #c77dff;">Unsupervised</strong></td>
-                    <td>Unlabeled data (X)</td>
-                    <td>Discover structure, patterns and clusters</td>
-                    <td>Calculation of similarity, density and variance</td>
-                    <td>Customer segmentation</td>
-                </tr>
-                <tr>
-                    <td><strong style="color: #34d399;">Reinforcement</strong></td>
-                    <td>Environment States (S)</td>
-                    <td>Learn an optimal action policy</td>
-                    <td>Reward/punishment signal after an action</td>
-                    <td>Autonomous drone navigation</td>
-                </tr>
-            </tbody>
-        </table>
+    <!-- 3. Reinforcement Learning -->
+    <div class="card-dark mb-5">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <span class="badge bg-success px-3 py-2 mb-2" style="font-size:0.85rem;">Paradigm 3</span>
+                <h2 style="color: var(--success);">Reinforcement Learning (RL)</h2>
+                <p><strong>Definition:</strong> Reinforcement Learning models an autonomous agent interacting with a dynamic environment through sequential trial and error. The agent perceives states, takes actions, and receives scalar feedback in the form of rewards or penalties, learning a policy that maximizes cumulative reward over time.</p>
+                
+                <h5 class="mt-3 text-light">Main Characteristics:</h5>
+                <ul class="features-list">
+                    <li>No static labeled dataset; data is collected dynamically through environmental interaction.</li>
+                    <li>Balances the exploration of unvisited states with the exploitation of known rewarding actions.</li>
+                    <li>Deals with delayed rewards and long-term sequential planning.</li>
+                </ul>
+
+                <h5 class="mt-3 text-light">Solvable Problem Categories:</h5>
+                <div class="d-flex gap-2 flex-wrap mt-2">
+                    <span class="pill">Robotics & Autonomous Motion</span>
+                    <span class="pill">Strategic Game Playing (AlphaGo)</span>
+                    <span class="pill">Resource Allocation & Portfolio Management</span>
+                </div>
+            </div>
+            <div class="col-lg-4 text-center mt-4 mt-lg-0">
+                <div class="p-4" style="background: rgba(16, 185, 129, 0.1); border-radius: 12px; border: 1px solid var(--success);">
+                    <div style="font-size: 3rem;">🤖</div>
+                    <h5 class="text-white mt-2">Core Algorithms</h5>
+                    <p class="small text-muted mb-0">Q-Learning, Deep Q-Networks (DQN), Proximal Policy Optimization (PPO), Actor-Critic (A2C).</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Comparative Table -->
+    <div class="card-dark">
+        <h3 class="mb-4">Comparative Summary Table</h3>
+        <div class="table-responsive">
+            <table class="table table-dark table-striped table-hover align-middle mb-0">
+                <thead>
+                    <tr style="background-color: rgba(67, 97, 238, 0.2);">
+                        <th>Paradigm</th>
+                        <th>Input Data</th>
+                        <th>Supervision Feedback</th>
+                        <th>Primary Objective</th>
+                        <th>Representative Example</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Supervised</strong></td>
+                        <td>Features + Ground Truth Labels</td>
+                        <td>Direct error measurement against known target</td>
+                        <td>Predict targets on unseen feature vectors</td>
+                        <td>Linear Regression: Delivery Time Estimation</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Unsupervised</strong></td>
+                        <td>Unlabeled Features only</td>
+                        <td>None (driven by data geometry and density)</td>
+                        <td>Discover latent patterns and clusters</td>
+                        <td>Customer segmentation by purchase behavior</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Reinforcement</strong></td>
+                        <td>States and Environmental Perceptions</td>
+                        <td>Scalar reward / penalty signal</td>
+                        <td>Maximize cumulative expected return</td>
+                        <td>Autonomous drone navigation and obstacle avoidance</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
 </div>

@@ -5,8 +5,8 @@
 <header class="hero-section">
     <div class="container">
         <span class="hero-tag">Use Case 2</span>
-        <h1>Financial <span>Fraud</span> Detection</h1>
-        <p>ML to identify fraudulent transactions in real-time in the banking sector.</p>
+        <h1>Financial Fraud <span>Detection</span></h1>
+        <p>Machine Learning for real-time anomaly detection and unauthorized transaction prevention in digital banking.</p>
     </div>
 </header>
 
@@ -16,17 +16,18 @@
         <div class="col-lg-8">
             <div class="card-dark h-100">
                 <h3>Problem Context</h3>
-                <p>Financial institutions process millions of daily transactions. Credit card fraud costs billions of dollars annually worldwide. Traditional methods based on static rules fail to detect sophisticated and modern fraud patterns.</p>
-                <p>The problem is: <strong>How to identify fraudulent transactions in real-time</strong> among millions of legitimate operations, minimizing false positives.</p>
+                <p>Global financial institutions process billions of electronic payment transactions daily. Credit card and wire fraud results in tens of billions of dollars in annual enterprise losses. Traditional rule-based engines fail to detect novel, sophisticated, and distributed attack vectors.</p>
+                <p>The core challenge is: <strong>How to identify fraudulent transactions in sub-second inference windows</strong> amid millions of legitimate payments, while strictly preventing customer friction caused by false positives.</p>
             </div>
         </div>
         <div class="col-lg-4">
             <div class="card-dark h-100">
                 <div class="card-icon icon-purple mx-auto">🏦</div>
-                <h4 class="text-center">ML Type</h4>
-                <p class="text-center"><strong>Unsupervised Learning</strong> + Supervised</p>
+                <h4 class="text-center">ML Paradigm</h4>
+                <p class="text-center"><strong>Unsupervised</strong> + <strong>Supervised Learning</strong></p>
                 <div class="text-center mt-3">
                     <span class="pill">Anomaly Detection</span>
+                    <span class="pill">Isolation Forest</span>
                     <span class="pill">Random Forest</span>
                 </div>
             </div>
@@ -36,31 +37,31 @@
     <div class="row g-4 mt-3">
         <div class="col-md-6">
             <div class="card-dark h-100">
-                <h4 style="color: var(--primary-light);">Data that could be used</h4>
+                <h4 style="color: var(--primary-light);">Data Utilized</h4>
                 <ul class="features-list">
-                    <li>Amount and time of each transaction.</li>
-                    <li>Geographic location of the point of sale.</li>
-                    <li>Customer transaction history.</li>
-                    <li>Frequency and usual spending pattern.</li>
-                    <li>Device and channel used.</li>
+                    <li>Transaction amount, currency, and exact timestamp.</li>
+                    <li>Merchant identification, merchant category code (MCC), and GPS geolocation.</li>
+                    <li>Cardholder baseline spending history and behavioral profiles.</li>
+                    <li>Geographical velocity (physical plausibility of distance between consecutive charges).</li>
+                    <li>Client device telemetry, browser fingerprint, and IP address reputation.</li>
                 </ul>
             </div>
         </div>
         <div class="col-md-6">
             <div class="card-dark h-100">
-                <h4 style="color: var(--primary-light);">What the model should predict</h4>
+                <h4 style="color: var(--primary-light);">What the Model Predicts</h4>
                 <ul class="features-list">
-                    <li><strong>Classification:</strong> Whether a transaction is legitimate or fraudulent.</li>
-                    <li><strong>Risk score:</strong> Fraud probability (0-100%).</li>
-                    <li><strong>Clustering:</strong> Detect unknown anomalous patterns.</li>
+                    <li><strong>Risk Probability Score:</strong> A normalized index (0% to 100%) indicating fraud likelihood.</li>
+                    <li><strong>Real-time Action Decision:</strong> Approve, Flag for Multi-Factor Authentication (MFA), or Decline.</li>
+                    <li><strong>Novel Anomaly Clusters:</strong> Unsupervised identification of emerging organized syndicate patterns.</li>
                 </ul>
             </div>
         </div>
     </div>
 
     <div class="card-dark mt-4">
-        <h4 style="color: var(--success);">Potential benefit</h4>
-        <p>Protect millions of clients from financial losses, reduce operational costs of fraud investigation, improve customer experience by avoiding false blocks, and adapt to new scams that constantly evolve.</p>
+        <h4 style="color: var(--success);">Potential Benefits</h4>
+        <p>Prevents catastrophic financial losses for consumers and issuing banks, slashes manual fraud investigation overhead by over 70%, enhances user trust through seamless checkout experiences, and dynamically adapts to zero-day financial cyber threats.</p>
     </div>
 
 </div>

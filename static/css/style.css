@@ -71,6 +71,10 @@ body {
     color: var(--primary-light) !important;
 }
 
+.navbar .dropdown-toggle::after {
+    display: none;
+}
+
 .dropdown-menu {
     background: var(--bg-card);
     border: 1px solid var(--border-color);

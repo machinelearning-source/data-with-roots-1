@@ -6,7 +6,7 @@
     <div class="container">
         <span class="hero-tag">Use Case 1</span>
         <h1>Medical Diagnosis with <span>AI</span></h1>
-        <p>Machine Learning application to detect diseases from medical images.</p>
+        <p>Application of Machine Learning for automated lesion detection and early pathology diagnosis from clinical imaging.</p>
     </div>
 </header>
 
@@ -16,15 +16,15 @@
         <div class="col-lg-8">
             <div class="card-dark h-100">
                 <h3>Problem Context</h3>
-                <p>Early medical diagnosis is crucial for the effective treatment of diseases like skin cancer. Experienced dermatologists can identify malignant lesions, but the shortage of specialists in many regions delays diagnoses.</p>
-                <p>The problem is: <strong>How to automate early detection of malignant skin lesions</strong> from medical images, reducing diagnosis time and improving accuracy.</p>
+                <p>Early clinical diagnosis is vital for successful oncology intervention, particularly in cutaneous malignancies like melanoma. While experienced dermatologists can identify malignant lesions, widespread shortages of specialists and human fatigue often lead to delayed diagnoses in remote areas.</p>
+                <p>The core challenge is: <strong>How to automate the early detection and segmentation of malignant skin lesions</strong> from dermatoscopic medical imagery, shortening turnaround times while maintaining dermatologist-level diagnostic sensitivity.</p>
             </div>
         </div>
         <div class="col-lg-4">
             <div class="card-dark h-100">
                 <div class="card-icon icon-blue mx-auto">🏥</div>
-                <h4 class="text-center">ML Type</h4>
-                <p class="text-center"><strong>Supervised Learning</strong> - Classification</p>
+                <h4 class="text-center">ML Paradigm</h4>
+                <p class="text-center"><strong>Supervised Learning</strong> - Image Classification</p>
                 <div class="text-center mt-3">
                     <span class="pill">Deep Learning</span>
                     <span class="pill">CNN</span>
@@ -37,30 +37,30 @@
     <div class="row g-4 mt-3">
         <div class="col-md-6">
             <div class="card-dark h-100">
-                <h4 style="color: var(--primary-light);">Data that could be used</h4>
+                <h4 style="color: var(--primary-light);">Data Utilized</h4>
                 <ul class="features-list">
-                    <li>Dermoscopic images of skin lesions.</li>
-                    <li>Patient metadata (age, gender, history).</li>
-                    <li>Extracted features: asymmetry, border, color, diameter (ABCD rule).</li>
-                    <li>Confirmed histopathological diagnosis (benign/malignant).</li>
+                    <li>High-resolution dermatoscopic skin lesion photographs.</li>
+                    <li>Clinical patient metadata (age, sex, anatomical lesion location, genetic history).</li>
+                    <li>Extracted morphological features: Asymmetry, Border irregularity, Color variegation, Diameter (ABCD rule).</li>
+                    <li>Histopathologically confirmed biopsy labels (benign vs. malignant).</li>
                 </ul>
             </div>
         </div>
         <div class="col-md-6">
             <div class="card-dark h-100">
-                <h4 style="color: var(--primary-light);">What the model should predict</h4>
+                <h4 style="color: var(--primary-light);">What the Model Predicts</h4>
                 <ul class="features-list">
-                    <li><strong>Classification:</strong> Whether the lesion is benign or malignant.</li>
-                    <li><strong>Probability:</strong> Confidence level of the diagnosis.</li>
-                    <li><strong>Specific type:</strong> Classify between melanoma, carcinoma, nevus, etc.</li>
+                    <li><strong>Binary Classification:</strong> Whether the examined lesion is benign or malignant.</li>
+                    <li><strong>Confidence Score:</strong> Calibrated probability metric associated with the diagnosis.</li>
+                    <li><strong>Pathology Subtype:</strong> Distinguishes between melanoma, basal cell carcinoma, and benign nevi.</li>
                 </ul>
             </div>
         </div>
     </div>
 
     <div class="card-dark mt-4">
-        <h4 style="color: var(--success);">Potential benefit</h4>
-        <p>Reduce diagnosis time from weeks to seconds, enable mass screenings in rural areas, assist dermatologists with an automated second opinion, and significantly increase early detection rates of skin cancer, saving lives.</p>
+        <h4 style="color: var(--success);">Potential Benefits</h4>
+        <p>Dramatically reduces preliminary screening turnaround from weeks to seconds, facilitates mass telemedicine screening in underserved rural clinics, provides dermatologists with an objective second diagnostic opinion, and significantly enhances early survival rates through timely intervention.</p>
     </div>
 
 </div>
