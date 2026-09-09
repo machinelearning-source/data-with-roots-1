@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block title %}SGD Classifier - Concepts{% endblock %}
+{% block content %}
+
+<header class="hero-section">
+    <div class="container">
+        <span class="hero-tag">Supervised Learning &gt; SGD Classifier (Assigned Model)</span>
+        <h1>SGD <span>Classifier</span> Concepts</h1>
+        <p>Stochastic Gradient Descent applied to classification — the algorithm assigned to our group.</p>
+    </div>
+</header>
+
+<div class="container mt-5 mb-section">
+
+    <div class="card-dark mb-4">
+        <span class="section-badge"># 1. Name and Definition</span>
+        <h3 class="section-title">What is the SGD Classifier?</h3>
+        <p>
+            The <strong>SGD Classifier</strong> (<code>sklearn.linear_model.SGDClassifier</code>) is a
+            <strong>linear classifiers suite trained by Stochastic Gradient Descent</strong>. Instead of using the whole dataset
+            at each step (like classic gradient descent), SGD updates the model weights using <strong>one random sample
+            (or a small mini-batch) at a time</strong>, which makes it extremely fast and scalable to large datasets.
+        </p>
+        <p>
+            In this project it uses a <strong>log-loss</strong> objective (equivalent to Logistic Regression) inside a pipeline with
+            <code>StandardScaler</code>, since SGD is sensitive to feature scaling.
+        </p>
+    </div>
+
+    <div class="card-dark mb-4">
+        <span class="section-badge"># 2. How It Works</span>
+        <h3 class="section-title">Algorithm Process</h3>
+        <ol>
+            <li>The features are <strong>standardized</strong> (mean 0, standard deviation 1) with <code>StandardScaler</code>.</li>
+            <li>The model starts with random weights and visits the training examples <strong>one by one</strong>.</li>
+            <li>At each example it computes the gradient of the loss and updates the weights in the <strong>opposite direction</strong> (descent).</li>
+            <li>The process repeats for many epochs until the loss converges.</li>
+        </ol>
+        <div class="code-snippet">
+            w = w - learning_rate · ∇loss(w, sample)
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-md-6">
+            <div class="card-dark h-100">
+                <span class="section-badge"># 3. Problems It Can Solve</span>
+                <h3 class="section-title">Types of Problems</h3>
+                <ul class="features-list">
+                    <li><strong>Binary classification</strong> (this project: credit risk).</li>
+                    <li>Multiclass classification (one-vs-all).</li>
+                    <li>Large-scale problems with millions of rows.</li>
+                    <li>Online / streaming learning.</li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card-dark h-100">
+                <span class="section-badge"># 4. Main Characteristics</span>
+                <h3 class="section-title">Characteristics</h3>
+                <ul class="features-list">
+                    <li>Very efficient: O(n) cost per epoch.</li>
+                    <li>Requires feature scaling to converge faster.</li>
+                    <li>Supports L1/L2 regularization and early stopping.</li>
+                    <li>Has a <code>learning rate</code> parameter that controls step size.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-md-6">
+            <div class="card-dark h-100">
+                <span class="section-badge"># 5. Advantages</span>
+                <h3 class="section-title">Advantages</h3>
+                <ul class="features-list">
+                    <li>Very fast training even with huge datasets.</li>
+                    <li>Low memory usage (one sample per update).</li>
+                    <li>Flexible: multiple loss functions (hinge, log, squared_error).</li>
+                    <li>Good for online learning / data streams.</li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card-dark h-100">
+                <span class="section-badge"># 6. Limitations</span>
+                <h3 class="section-title">Limitations</h3>
+                <ul class="features-list">
+                    <li>Sensitive to feature scaling.</li>
+                    <li>Learning rate must be tuned manually.</li>
+                    <li>Only linear decision boundaries (unless combined with kernels).</li>
+                    <li>Results may vary with random initializations; needs random_state.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-dark">
+        <span class="section-badge"># 7. Real-World Example</span>
+        <h3 class="section-title">Example of a Real-World Classification Problem</h3>
+        <p>
+            <strong>Credit risk assessment in banking.</strong> A bank must decide, from each loan applicant's features (income,
+            requested amount, credit score, employment history), whether the applicant is a <strong>High Risk</strong> or
+            <strong>Low Risk</strong> borrower. Millions of applications make SGD ideal because it trains quickly and can be
+            updated as new applications arrive. This is exactly the problem implemented in the Application page.
+        </p>
+    </div>
+
+</div>
+
+{% endblock %}

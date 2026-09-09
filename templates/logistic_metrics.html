@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Logistic Regression - Evaluation Metrics{% endblock %}
+{% block content %}
+
+<header class="hero-section">
+    <div class="container">
+        <span class="hero-tag">Supervised Learning &gt; Logistic Regression &gt; Evaluation Metrics</span>
+        <h1>Model <span>Evaluation</span> Metrics</h1>
+        <p>Metrics computed on the 20% testing dataset ({{ test_size }} records).</p>
+    </div>
+</header>
+
+<div class="container mt-5 mb-section">
+
+    <!-- CONFUSION MATRIX -->
+    <div class="mb-4">
+        <span class="section-badge"># 1. Confusion Matrix</span>
+        <h2 class="section-title">Confusion Matrix Visualization</h2>
+    </div>
+    <div class="card-dark mb-4 text-center">
+        <div class="plot-wrapper p-2" style="background-color: #0b0f19; border-radius: 12px; border: 1px solid var(--border-color); display:inline-block;">
+            <img src="data:image/png;base64,{{ cm_plot }}" alt="Confusion Matrix - Logistic Regression" style="max-width:100%;">
+        </div>
+        <div class="row g-3 mt-3">
+            <div class="col-md-3 col-6"><div class="stat-card"><div class="num text-success">{{ cm.tp }}</div><div class="label">TP - True Positives (predijo "se va" y era correcto)</div></div></div>
+            <div class="col-md-3 col-6"><div class="stat-card"><div class="num text-info">{{ cm.tn }}</div><div class="label">TN - True Negatives (predijo "se queda" y era correcto)</div></div></div>
+            <div class="col-md-3 col-6"><div class="stat-card"><div class="num text-warning">{{ cm.fp }}</div><div class="label">FP - False Positives (falsa alarma de abandono)</div></div></div>
+            <div class="col-md-3 col-6"><div class="stat-card"><div class="num text-danger">{{ cm.fn }}</div><div class="label">FN - False Negatives (no detectó el abandono)</div></div></div>
+        </div>
+        <p class="text-muted mt-3 mb-0">
+            <strong>Interpretation:</strong> On the testing set, the model correctly identifies most clients that truly churned
+            ({{ cm.tp }} TP) and most that stayed ({{ cm.tn }} TN). A modest number of {{ cm.fp }} false alarms and {{ cm.fn }}
+            missed churners remain, which is acceptable for churn management.
+        </p>
+    </div>
+
+    <!-- CLASSIFICATION METRICS -->
+    <div class="mb-4">
+        <span class="section-badge"># 2. Classification Metrics</span>
+        <h2 class="section-title">Metric Summary (Bootstrap Cards)</h2>
+    </div>
+    <div class="row g-4 mb-4">
+        <div class="col-md-3 col-6">
+            <div class="card-dark h-100 text-center"><div class="display-4 fw-bold text-primary">{{ (metrics.accuracy*100)|round(1) }}%</div><h5 class="mt-2">Accuracy</h5><p class="text-muted small mb-0">% of correct predictions</p></div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="card-dark h-100 text-center"><div class="display-4 fw-bold text-success">{{ (metrics.precision*100)|round(1) }}%</div><h5 class="mt-2">Precision</h5><p class="text-muted small mb-0">Of those predicted churn, how many truly churned</p></div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="card-dark h-100 text-center"><div class="display-4 fw-bold text-info">{{ (metrics.recall*100)|round(1) }}%</div><h5 class="mt-2">Recall</h5><p class="text-muted small mb-0">Of all real churners, how many were detected</p></div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="card-dark h-100 text-center"><div class="display-4 fw-bold text-warning">{{ (metrics.f1*100)|round(1) }}%</div><h5 class="mt-2">F1-Score</h5><p class="text-muted small mb-0">Balance between precision and recall</p></div>
+        </div>
+    </div>
+
+    <div class="card-dark">
+        <span class="section-badge"># 3. Interpretation</span>
+        <h3 class="section-title">Model Performance Interpretation</h3>
+        <p>
+            With an <strong>accuracy of {{ (metrics.accuracy*100)|round(1) }}%</strong> on unseen data, the Logistic Regression model
+            generalizes correctly. A <strong>precision of {{ (metrics.precision*100)|round(1) }}%</strong> means that when the model
+            announces a churn risk, it is usually right — valuable to avoid wasting retention resources. The
+            <strong>recall of {{ (metrics.recall*100)|round(1) }}%</strong> shows the model recovers most real churners, and the
+            <strong>F1 of {{ (metrics.f1*100)|round(1) }}%</strong> confirms a healthy balance between both. Overall the model is
+            reliable enough for a churn early-warning system.
+        </p>
+    </div>
+
+</div>
+
+{% endblock %}

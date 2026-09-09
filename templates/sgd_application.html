@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+{% block title %}SGD Classifier - Application{% endblock %}
+{% block content %}
+
+<header class="hero-section">
+    <div class="container">
+        <span class="hero-tag">Supervised Learning &gt; SGD Classifier (Assigned Model) &gt; Application</span>
+        <h1>Credit <span>Risk</span> Classification</h1>
+        <p>Stochastic Gradient Descent classifier trained with 4 independent variables (80% train / 20% test).</p>
+    </div>
+</header>
+
+<div class="container mt-5 mb-section">
+
+    {% if error %}
+    <div class="alert alert-danger d-flex align-items-center mb-4" role="alert">
+        <span>⚠️ {{ error }}</span>
+    </div>
+    {% endif %}
+
+    <!-- 1. PROBLEM CONTEXT -->
+    <div class="mb-4">
+        <span class="section-badge"># 1. Problem Context</span>
+        <h2 class="section-title">Business Problem Being Analyzed</h2>
+    </div>
+    <div class="card-dark mb-4">
+        <p>
+            <strong>What problem is being analyzed?</strong> <strong>Credit risk assessment</strong>: determining whether a loan
+            applicant is likely to default on their payments.
+        </p>
+        <p>
+            <strong>What do the data represent?</strong> 600 loan applicants with 4 numeric features and their assigned risk class.
+        </p>
+        <p>
+            <strong>Independent variables (X = 4):</strong> <code>income_usd</code> (monthly income),
+            <code>loan_amount_usd</code> (requested amount), <code>credit_score</code> (300–850),
+            <code>months_employed</code> (employment history in months).
+        </p>
+        <p><strong>Target variable (Y):</strong> <code>high_risk</code></p>
+        <p>
+            <strong>Two possible classes:</strong> <span class="badge bg-primary">0 = Low Risk (Bajo riesgo)</span>
+            <span class="badge bg-danger">1 = High Risk (Alto riesgo)</span>
+        </p>
+        <p>
+            <strong>What does the model classify?</strong> It classifies each applicant as <strong>High Risk</strong> or
+            <strong>Low Risk</strong> of default based on all four variables entered by the user.
+        </p>
+    </div>
+
+    <!-- 2. DATASET -->
+    <div class="mb-4">
+        <span class="section-badge"># 2. Dataset (CSV loaded with Pandas)</span>
+        <h2 class="section-title">Dataset Summary</h2>
+    </div>
+    <div class="card-dark mb-4">
+        <div class="row g-3 mb-3">
+            <div class="col-md-3 col-6"><div class="stat-card"><div class="num">{{ stats.total_records }}</div><div class="label">Total Records</div></div></div>
+            <div class="col-md-3 col-6"><div class="stat-card"><div class="num text-info">{{ stats.class0 }}</div><div class="label">Class 0 (Low Risk)</div></div></div>
+            <div class="col-md-3 col-6"><div class="stat-card"><div class="num text-danger">{{ stats.class1 }}</div><div class="label">Class 1 (High Risk)</div></div></div>
+            <div class="col-md-3 col-6"><div class="stat-card"><div class="num">{{ stats.test_size }}</div><div class="label">Test Records (20%)</div></div></div>
+        </div>
+        <h6 class="text-light mb-2">Meaning of each variable:</h6>
+        <ul class="features-list">
+            <li><strong>income_usd:</strong> monthly income of the applicant (USD).</li>
+            <li><strong>loan_amount_usd:</strong> loan amount requested (USD).</li>
+            <li><strong>credit_score:</strong> creditworthiness score between 300 and 850.</li>
+            <li><strong>months_employed:</strong> months of employment history.</li>
+            <li><strong>high_risk (target):</strong> 0 = Low Risk / 1 = High Risk.</li>
+        </ul>
+        <p class="mb-0"><strong>Source:</strong> <code>data/sgd_credit_risk.csv</code> loaded with <code>pandas.read_csv()</code>.</p>
+    </div>
+
+    <!-- 3. DATA VISUALIZATION -->
+    <div class="mb-4">
+        <span class="section-badge"># 3. Data Visualization</span>
+        <h2 class="section-title">Observations Grouped by Classification Label (most relevant variables)</h2>
+    </div>
+    <div class="card-dark mb-5 text-center">
+        <p class="text-muted mb-3">
+            Scatter of the two most visually relevant variables (income vs credit score). All 4 variables are still used to train the model.
+        </p>
+        <div class="plot-wrapper p-2" style="background-color: #0b0f19; border-radius: 12px; border: 1px solid var(--border-color);">
+            <img src="data:image/png;base64,{{ plot_url }}" class="img-fluid rounded" alt="SGD Classifier Credit Risk Visualization">
+        </div>
+    </div>
+
+    <!-- 4. TRAIN/TEST SPLIT -->
+    <div class="mb-4">
+        <span class="section-badge"># 4. Train/Test Split</span>
+        <h2 class="section-title">80% / 20% Split (train_test_split)</h2>
+    </div>
+    <div class="card-dark mb-4">
+        <p>
+            Divided with <code>sklearn.model_selection.train_test_split(random_state=42)</code>:
+            <strong>{{ stats.train_size }} records for training (80%)</strong> and
+            <strong>{{ stats.test_size }} records for testing (20%)</strong>.
+        </p>
+    </div>
+
+    <!-- 5. MODEL -->
+    <div class="mb-4">
+        <span class="section-badge"># 5. SGD Classification Model</span>
+        <h2 class="section-title">Model Pipeline</h2>
+    </div>
+    <div class="card-dark mb-4">
+        <div class="code-snippet">
+            CSV Dataset → Pandas → X(4 features) and y → 80/20 Split → Pipelines(StandardScaler, SGDClassifier) → Predictions → Evaluation → New Classifications
+        </div>
+        <p class="mt-3 mb-0">
+            All predictions are generated by the trained pipeline — <strong>no hard-coded results</strong>.
+        </p>
+    </div>
+
+    <!-- 6. CLASSIFICATION FORM -->
+    <div class="mb-4">
+        <span class="section-badge"># 6. Classification Form</span>
+        <h2 class="section-title">New Classification (all independent variables)</h2>
+    </div>
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <div class="card-dark h-100">
+                <h3>Submit Applicant Data</h3>
+                <p class="text-muted">Enter all 4 independent variables. The trained model returns class 0 (Low Risk) or 1 (High Risk).</p>
+                <form method="POST" action="/supervised/sgd-classifier/application" class="mt-3">
+                    <div class="mb-3">
+                        <label for="income" class="form-label fw-bold">Monthly Income (USD):</label>
+                        <input type="number" step="any" min="0" class="form-control bg-dark text-white border-secondary" id="income" name="income" placeholder="e.g., 3200" value="{{ inputs.income if inputs.income is not none else '' }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="loan" class="form-label fw-bold">Loan Amount (USD):</label>
+                        <input type="number" step="any" min="0" class="form-control bg-dark text-white border-secondary" id="loan" name="loan" placeholder="e.g., 15000" value="{{ inputs.loan if inputs.loan is not none else '' }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="credit" class="form-label fw-bold">Credit Score (300–850):</label>
+                        <input type="number" step="1" min="300" max="850" class="form-control bg-dark text-white border-secondary" id="credit" name="credit" placeholder="e.g., 620" value="{{ inputs.credit if inputs.credit is not none else '' }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="months" class="form-label fw-bold">Months Employed:</label>
+                        <input type="number" step="any" min="0" class="form-control bg-dark text-white border-secondary" id="months" name="months" placeholder="e.g., 24" value="{{ inputs.months if inputs.months is not none else '' }}" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg w-100 py-3 fw-bold" style="background: var(--gradient-primary); border:none;">
+                        🧠 Classify with SGD Classifier
+                    </button>
+                </form>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card-dark h-100 d-flex flex-column justify-content-center">
+                {% if prediction is not none %}
+                <div class="prediction-result p-4 text-center" style="border: 2px solid var(--success); border-radius: 12px;">
+                    <span class="badge bg-success mb-2 px-3 py-2" style="font-size:0.85rem;">✅ Classification Computed</span>
+                    <h4 class="text-white mt-2">Applicant inputs: {{ inputs.income }}, {{ inputs.loan }}, {{ inputs.credit }}, {{ inputs.months }}</h4>
+                    <div class="display-4 fw-bold text-success my-3">Class {{ prediction }}</div>
+                    <p class="lead text-light">{{ class_label }}</p>
+                    <p class="small text-muted">P(class = 1, High Risk): {{ prob }}</p>
+                    <div class="border-top border-secondary pt-3 mt-3 text-start small text-light">{{ class_meaning }}</div>
+                </div>
+                {% else %}
+                <div class="text-center py-5 text-muted">
+                    <div style="font-size: 3.5rem;">🏦</div>
+                    <h4 class="mt-3 text-light">Awaiting User Input</h4>
+                    <p>Enter the applicant's four variables to obtain the risk classification.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
