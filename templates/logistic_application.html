@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+{% block title %}Logistic Regression - Application{% endblock %}
+{% block content %}
+
+<header class="hero-section">
+    <div class="container">
+        <span class="hero-tag">Supervised Learning &gt; Logistic Regression &gt; Application</span>
+        <h1>Customer <span>Churn</span> Prediction</h1>
+        <p>Binary Logistic Regression trained with Scikit-Learn on 600 records (80% train / 20% test).</p>
+    </div>
+</header>
+
+<div class="container mt-5 mb-section">
+
+    {% if error %}
+    <div class="alert alert-danger d-flex align-items-center mb-4" role="alert">
+        <span>⚠️ {{ error }}</span>
+    </div>
+    {% endif %}
+
+    <!-- 1. PROBLEM CONTEXT -->
+    <div class="mb-4">
+        <span class="section-badge"># 1. Problem Context</span>
+        <h2 class="section-title">Business Problem Being Analyzed</h2>
+    </div>
+    <div class="card-dark mb-4">
+        <p>
+            <strong>What problem is being analyzed?</strong> Customer <strong>churn</strong>: the abandonment of the service by
+            subscribers of a telecommunications company.
+        </p>
+        <p>
+            <strong>What do the data represent?</strong> 600 historical client records with their permanence time in the company
+            and whether they left (<code>churn = 1</code>) or stayed (<code>churn = 0</code>).
+        </p>
+        <p>
+            <strong>Independent variable (X):</strong> Time as a client in months — <code>tenure_months</code>.
+            <strong>Target variable (Y):</strong> <code>churn</code>.
+        </p>
+        <p>
+            <strong>Two possible classes:</strong> <span class="badge bg-primary">0 = Se queda (Stay)</span>
+            <span class="badge bg-danger">1 = Se va (Churn)</span>
+        </p>
+        <p>
+            <strong>What does the model classify?</strong> It attempts to classify whether a client with a given tenure
+            is likely to <strong>leave the service</strong> (probability of churn).
+        </p>
+    </div>
+
+    <!-- 2. DATASET -->
+    <div class="mb-4">
+        <span class="section-badge"># 2. Dataset (CSV loaded with Pandas)</span>
+        <h2 class="section-title">Dataset Summary</h2>
+    </div>
+    <div class="card-dark mb-4">
+        <div class="row g-3 mb-3">
+            <div class="col-md-3 col-6">
+                <div class="stat-card"><div class="num">{{ stats.total_records }}</div><div class="label">Total Records</div></div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stat-card"><div class="num">{{ stats.class0 }}</div><div class="label">Class 0 (Stay)</div></div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stat-card"><div class="num">{{ stats.class1 }}</div><div class="label">Class 1 (Churn)</div></div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stat-card"><div class="num">{{ stats.test_size }}</div><div class="label">Test Records (20%)</div></div>
+            </div>
+        </div>
+        <ul class="features-list">
+            <li><strong>Independent variable:</strong> <code>tenure_months</code> (time as client in months).</li>
+            <li><strong>Target variable:</strong> <code>churn</code> → <strong>0 = Cliente se queda</strong> / <strong>1 = Cliente se va</strong>.</li>
+            <li><strong>Source:</strong> <code>data/logistic_churn.csv</code> loaded with <code>pandas.read_csv()</code>.</li>
+        </ul>
+    </div>
+
+    <!-- 3. DATA VISUALIZATION -->
+    <div class="mb-4">
+        <span class="section-badge"># 3. Data Visualization</span>
+        <h2 class="section-title">Observations Grouped by Classification Label</h2>
+    </div>
+    <div class="card-dark mb-5 text-center">
+        <p class="text-muted mb-3">
+            The chart groups all {{ stats.total_records }} clients by their real class. The dashed yellow line shows the
+            logistic <strong>decision threshold</strong> (~28 months).
+        </p>
+        <div class="plot-wrapper p-2" style="background-color: #0b0f19; border-radius: 12px; border: 1px solid var(--border-color);">
+            <img src="data:image/png;base64,{{ plot_url }}" class="img-fluid rounded" alt="Logistic Regression Churn Visualization">
+        </div>
+    </div>
+
+    <!-- 4. TRAIN/TEST SPLIT -->
+    <div class="mb-4">
+        <span class="section-badge"># 4. Train/Test Split</span>
+        <h2 class="section-title">80% / 20% Split (train_test_split)</h2>
+    </div>
+    <div class="card-dark mb-4">
+        <p>
+            The dataset was divided with <code>sklearn.model_selection.train_test_split(random_state=42)</code>:
+            <strong>{{ stats.train_size }} records for training (80%)</strong> and
+            <strong>{{ stats.test_size }} records for testing (20%)</strong>.
+        </p>
+        <div class="code-snippet">
+            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+        </div>
+    </div>
+
+    <!-- 5. MODEL -->
+    <div class="mb-4">
+        <span class="section-badge"># 5. Logistic Regression Model</span>
+        <h2 class="section-title">Model Pipeline</h2>
+    </div>
+    <div class="card-dark mb-4">
+        <div class="code-snippet">
+            CSV Dataset → Pandas → X and y → 80/20 Split → Model Training → Predictions → Evaluation → New Classifications
+        </div>
+        <p class="mt-3 mb-0">
+            The model is <code>sklearn.linear_model.LogisticRegression(max_iter=2000)</code>. All predictions shown here are generated
+            by the trained model — no hard-coded results.
+        </p>
+    </div>
+
+    <!-- 6. BINARY CLASSIFICATION FORM -->
+    <div class="mb-4">
+        <span class="section-badge"># 6. Binary Classification Form</span>
+        <h2 class="section-title">New Classification</h2>
+    </div>
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <div class="card-dark h-100">
+                <h3>Submit Client Tenure</h3>
+                <p class="text-muted">Enter the months the client has been with the company. The model returns class 0 (Stay) or 1 (Churn).</p>
+                <form method="POST" action="/supervised/logistic-regression/application" class="mt-3">
+                    <div class="mb-3">
+                        <label for="tenure" class="form-label fw-bold">Time as client (months):</label>
+                        <div class="input-group input-group-lg">
+                            <input type="number" step="any" min="0.1" max="60"
+                                   class="form-control bg-dark text-white border-secondary"
+                                   id="tenure" name="tenure"
+                                   placeholder="e.g., 15.0"
+                                   value="{{ tenure_input if tenure_input else '' }}" required>
+                            <span class="input-group-text bg-secondary text-white border-secondary">months</span>
+                        </div>
+                        <div class="form-text text-muted">Validation enforces values between 0 and 60 months.</div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg w-100 py-3 fw-bold" style="background: var(--gradient-primary); border:none;">
+                        🧠 Classify with Logistic Regression
+                    </button>
+                </form>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card-dark h-100 d-flex flex-column justify-content-center">
+                {% if prediction is not none %}
+                <div class="prediction-result p-4 text-center" style="border: 2px solid var(--success); border-radius: 12px;">
+                    <span class="badge bg-success mb-2 px-3 py-2" style="font-size:0.85rem;">✅ Classification Computed</span>
+                    <h4 class="text-white mt-2">Tenure: <strong class="text-info">{{ tenure_input }} months</strong></h4>
+                    <div class="display-4 fw-bold text-success my-3">Class {{ prediction }}</div>
+                    <p class="lead text-light">{{ class_label }}</p>
+                    <p class="small text-muted">P(class = 1): {{ prob }}</p>
+                    <div class="border-top border-secondary pt-3 mt-3 text-start small text-light">{{ class_meaning }}</div>
+                </div>
+                {% else %}
+                <div class="text-center py-5 text-muted">
+                    <div style="font-size: 3.5rem;">🧑‍💼</div>
+                    <h4 class="mt-3 text-light">Awaiting User Input</h4>
+                    <p>Enter the client's tenure in the form and the model will classify the churn risk.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
