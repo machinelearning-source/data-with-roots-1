@@ -4,7 +4,7 @@
 > **Asignatura:** Machine Learning - Semestre 6  
 > **Proyecto:** Data with Roots  
 > **Tema Asignado:** Estimar el tiempo de entrega según la distancia recorrida (Regresión Lineal Simple)  
-> **Desarrollador:** Luis Revolledo  
+> **Desarrolladores:** Oscar Javier Bello ,Luis Revolledo  
 
 ---
 
