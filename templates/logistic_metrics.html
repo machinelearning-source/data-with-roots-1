@@ -41,16 +41,16 @@
     </div>
     <div class="row g-4 mb-4">
         <div class="col-md-3 col-6">
-            <div class="card-dark h-100 text-center"><div class="display-4 fw-bold text-primary">{{ (metrics.accuracy*100)|round(1) }}%</div><h5 class="mt-2">Accuracy</h5><p class="text-muted small mb-0">% of correct predictions</p></div>
+            <div class="card-dark h-100 text-center"><div class="display-4 fw-bold text-primary">{{ (metrics.accuracy*100)|round(1) }}%</div><h5 class="mt-2">Accuracy</h5><div class="progress grad-cool mt-3 mb-2" role="progressbar" aria-label="Accuracy" aria-valuenow="{{ (metrics.accuracy*100)|round(1) }}" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar" style="width: {{ (metrics.accuracy*100)|round(1) }}%"></div></div><p class="text-muted small mb-0">% of correct predictions</p></div>
         </div>
         <div class="col-md-3 col-6">
-            <div class="card-dark h-100 text-center"><div class="display-4 fw-bold text-success">{{ (metrics.precision*100)|round(1) }}%</div><h5 class="mt-2">Precision</h5><p class="text-muted small mb-0">Of those predicted churn, how many truly churned</p></div>
+            <div class="card-dark h-100 text-center"><div class="display-4 fw-bold text-success">{{ (metrics.precision*100)|round(1) }}%</div><h5 class="mt-2">Precision</h5><div class="progress grad-mint mt-3 mb-2" role="progressbar" aria-label="Precision" aria-valuenow="{{ (metrics.precision*100)|round(1) }}" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar" style="width: {{ (metrics.precision*100)|round(1) }}%"></div></div><p class="text-muted small mb-0">Of those predicted churn, how many truly churned</p></div>
         </div>
         <div class="col-md-3 col-6">
-            <div class="card-dark h-100 text-center"><div class="display-4 fw-bold text-info">{{ (metrics.recall*100)|round(1) }}%</div><h5 class="mt-2">Recall</h5><p class="text-muted small mb-0">Of all real churners, how many were detected</p></div>
+            <div class="card-dark h-100 text-center"><div class="display-4 fw-bold text-info">{{ (metrics.recall*100)|round(1) }}%</div><h5 class="mt-2">Recall</h5><div class="progress grad-violet mt-3 mb-2" role="progressbar" aria-label="Recall" aria-valuenow="{{ (metrics.recall*100)|round(1) }}" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar" style="width: {{ (metrics.recall*100)|round(1) }}%"></div></div><p class="text-muted small mb-0">Of all real churners, how many were detected</p></div>
         </div>
         <div class="col-md-3 col-6">
-            <div class="card-dark h-100 text-center"><div class="display-4 fw-bold text-warning">{{ (metrics.f1*100)|round(1) }}%</div><h5 class="mt-2">F1-Score</h5><p class="text-muted small mb-0">Balance between precision and recall</p></div>
+            <div class="card-dark h-100 text-center"><div class="display-4 fw-bold text-warning">{{ (metrics.f1*100)|round(1) }}%</div><h5 class="mt-2">F1-Score</h5><div class="progress grad-amber mt-3 mb-2" role="progressbar" aria-label="F1-Score" aria-valuenow="{{ (metrics.f1*100)|round(1) }}" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar" style="width: {{ (metrics.f1*100)|round(1) }}%"></div></div><p class="text-muted small mb-0">Balance between precision and recall</p></div>
         </div>
     </div>
 
