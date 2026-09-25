@@ -1,132 +1,94 @@
-# Data with Roots - Machine Learning Web Application
+# Data with Roots
 
-> **Universidad de Cundinamarca** - Facultad de Ingeniería  
-> **Asignatura:** Machine Learning - Semestre 6  
-> **Proyecto:** Data with Roots  
-> **Tema Asignado:** Estimar el tiempo de entrega según la distancia recorrida (Regresión Lineal Simple)  
-> **Desarrolladores:** Oscar Javier Bello ,Luis Revolledo  
+Data with Roots is a Flask web application for the Machine Learning course at Universidad de Cundinamarca. The repository contains the existing supervised learning modules and the R2A2 unsupervised learning module.
 
----
+## R2A2 topic
 
-## 📋 Descripción del Proyecto
+**Selected topic:** Flight segmentation by distance and duration
 
-**Data with Roots** es una plataforma web interactiva desarrollada con **Python**, **Flask** y **Bootstrap 5** que cumple dos propósitos fundamentales:
-1. **Módulo Educativo:** Presentar de manera didáctica y visual los conceptos esenciales de Machine Learning, la taxonomía de modelos (Supervisado, No Supervisado y por Refuerzo) y 4 casos de uso reales en distintas industrias.
-2. **Módulo Práctico y Predictivo:** Implementar un modelo de **Regresión Lineal Simple** entrenado con **Scikit-Learn** sobre un conjunto de **600 registros** de logística de envíos para predecir en tiempo real el tiempo de entrega ($Y$ en minutos) a partir de la distancia recorrida ($X$ en kilómetros).
+The R2A2 module is available in English and includes:
 
----
+- Unsupervised learning, clustering, K-Means, centroids, iterations, and Euclidean distance.
+- A manual exercise with 100 records, two numerical variables, three initial centroids, three iterations, complete distance and assignment tables, plots, and WCSS comparison.
+- A Scikit-Learn application with 1,000 flight records, standardized preprocessing, three clusters, centroids, cluster sizes, a complete assignment table, and silhouette evaluation.
+- The assigned Logistic Regression model for the binary target `delayed`: `0 = on-time` and `1 = delayed` using a 15-minute threshold.
+- An interactive prediction form for a new flight.
 
-## 🗂️ Estructura Obligatoria del Menú y Rutas
+The rubric mentions `study_hours` as an independent variable, but the selected flight dataset does not contain that field. The implementation uses the available flight predictors `distance_km` and `duration_min` rather than inventing an invalid variable.
 
-| Menú Principal | Submenú / Sección | Ruta en la App (URL) | Descripción |
-| :--- | :--- | :--- | :--- |
-| **Home** | Inicio | `/` | Página principal y presentación del proyecto |
-| **Machine Learning** | Concepts | `/ml/concepts` | ¿Qué es ML?, propósito, datos, modelos y ejemplos |
-| **Machine Learning** | Types of ML | `/ml/types` | Supervisado, No Supervisado y Refuerzo |
-| **Machine Learning** | Caso de Uso 1 | `/ml/use-cases/1` | Diagnóstico Médico por Imágenes (Salud / CNN) |
-| **Machine Learning** | Caso de Uso 2 | `/ml/use-cases/2` | Detección de Fraude Financiero (Fintech) |
-| **Machine Learning** | Caso de Uso 3 | `/ml/use-cases/3` | Predicción de Demanda en Retail (Series de Tiempo) |
-| **Machine Learning** | Caso de Uso 4 | `/ml/use-cases/4` | Navegación de Vehículos Autónomos (Robótica / RL) |
-| **Supervised** | LR - Concepts | `/supervised/linear-regression/concepts` | Fundamentos teóricos de Regresión Lineal Simple |
-| **Supervised** | LR - Application | `/supervised/linear-regression/application` | Modelo Scikit-Learn, 600 datos, gráfica y formulario interactivo |
+## Public routes
 
----
+| Section | Route |
+| --- | --- |
+| Home | `/` |
+| K-Means concepts | `/unsupervised/kmeans/concepts` |
+| Manual K-Means exercise | `/unsupervised/kmeans/manual` |
+| K-Means application | `/unsupervised/kmeans/application` |
+| Logistic Regression flight-delay application | `/supervised/logistic-regression/flight-delay` |
+| Health check | `/health` |
 
-## 🔬 Especificaciones del Modelo de Machine Learning
+The application uses relative routes and does not require authentication. All module pages are linked from the main navigation.
 
-- **Problema:** Estimación de tiempos de entrega en logística de última milla.
-- **Variable Independiente ($X$):** Distancia recorrida en carretera (`distance_km`), medida en **kilómetros ($km$)**.
-- **Variable Dependiente ($Y$):** Tiempo total de entrega (`delivery_time_min`), medido en **minutos ($min$)**.
-- **Tamaño del Dataset:** **600 registros** (supera el requisito mínimo de 500 registros).
-- **Algoritmo:** `sklearn.linear_model.LinearRegression`.
-- **Ecuación del Modelo:**
-  $$\text{Tiempo (min)} = 0.4482 \times \text{Distancia (km)} + 5.28$$
-- **Métricas:**
-  - **Coeficiente de Determinación ($R^2$):** $\approx 97.86\%$ (Ajuste lineal excelente).
-  - **Pendiente ($\beta_1$):** $\approx 0.4482\text{ min/km}$ (~2.2 minutos por cada 5 km).
-  - **Intercepto ($\beta_0$):** $\approx 5.28\text{ min}$ (Tiempo base de preparación y despacho).
+## Project structure
 
----
-
-## 🛠️ Tecnologías y Librerías Utilizadas
-
-- **Lenguaje:** Python 3.14 / 3.11+
-- **Backend:** Flask 3.x
-- **Machine Learning:** Scikit-Learn 1.x
-- **Manipulación de Datos:** Pandas y NumPy
-- **Visualización Gráfica:** Matplotlib (Backend `'Agg'`, codificación Base64 en memoria)
-- **Frontend:** HTML5, CSS3 moderno con tema oscuro, Bootstrap 5.3.2
-- **Servidor de Producción:** Gunicorn
-- **Control de Versiones:** Git & GitHub (Flujo `master` $\rightarrow$ `R1A1` $\rightarrow$ PR $\rightarrow$ `master`)
-- **PaaS / Despliegue:** Render
-
----
-
-## 🌿 Flujo Git y Gestión de Ramas (Requisito Obligatorio)
-
-El desarrollo del proyecto se ejecutó rigurosamente siguiendo la especificación docente:
 ```text
-master ───> rama R1A1 ───> desarrollo progresivo ───> commits ───> Pull Request ───> merge ───> master
+.
+├── app.py
+├── kmeans_ml.py
+├── requirements.txt
+├── Procfile
+├── render.yaml
+├── data/
+│   ├── flights_manual_100.csv
+│   └── flights_dataset.csv
+├── templates/
+│   ├── base.html
+│   ├── home.html
+│   ├── kmeans_concepts.html
+│   ├── kmeans_manual.html
+│   ├── kmeans_application.html
+│   └── kmeans_classification.html
+├── static/
+│   └── css/style.css
+└── generate_flights_dataset.py
 ```
 
-1. Se inició en la rama `master`.
-2. Se creó la rama `R1A1` (`git checkout -b R1A1`).
-3. Se realizaron commits progresivos y descriptivos que demuestran la evolución del código.
-4. Se integró mediante Pull Request hacia la rama `master`.
+## Local execution
 
----
+```bash
+py -m pip install -r requirements.txt
+py app.py
+```
 
-## 🚀 Instrucciones de Ejecución Local
+Open `http://127.0.0.1:5000` in a browser. The application uses Matplotlib's `Agg` backend, so it does not require a graphical desktop on the server.
 
-1. Clonar el repositorio o abrir la carpeta en **Visual Studio Code**:
-   ```bash
-   code .
-   ```
-2. Instalar dependencias:
-   ```bash
-   py -m pip install -r requirements.txt
-   ```
-3. Iniciar el servidor local:
-   ```bash
-   py app.py
-   ```
-4. Abrir en el navegador:
-   [http://127.0.0.1:5000](http://127.0.0.1:5000)
+The R2A2 computations and Base64 plots are cached after their first request. This avoids repeating K-Means, CSV loading, and chart generation on every visit and keeps navigation responsive.
 
----
+## Git workflow
 
-## ☁️ Despliegue en Render
+The R2A2 work is developed on the `R2A2` branch and is based on the repository's existing structure. The branch is intended to contain the progressive implementation evidence required by the assignment.
 
-1. Conectar tu repositorio público de GitHub en [Render.com](https://render.com).
-2. Crear un nuevo **Web Service**.
-3. Parámetros de configuración:
-   - **Environment:** `Python`
-   - **Build Command:** `pip install -r requirements.txt`
-   - **Start Command:** `gunicorn app:app`
-4. Desplegar y verificar que todas las páginas del menú sean navegables.
+```bash
+git switch R2A2
+git status
+git log --oneline --decorate -10
+```
 
-### 🌐 URL de Producción
+The repository is configured for the public GitHub project:
 
-La aplicación desplegada en Render está disponible en:
+<https://github.com/machinelearning-source/data-with-roots-1>
 
-**https://data-with-roots-1.onrender.com**
+## Render deployment
 
-> **Nota:** Render asigna el sufijo `-1` automáticamente porque el nombre `data-with-roots` ya estaba registrado en su plataforma. Usa **siempre** esta URL con el `-1`. El dominio sin ese sufijo (`https://data-with-roots.onrender.com`) **no está disponible**.
+The root `render.yaml` and `Procfile` use:
 
-### 🔁 Auto-Deploy
+```text
+Build command: pip install -r requirements.txt
+Start command: gunicorn app:app
+```
 
-- El servicio Render está conectado al repositorio **`machinelearning-source/data-with-roots-1`** (rama `main`).
-- Cada **push a `main`** dispara automáticamente un nuevo despliegue (*Auto-Deploy*).
-- Configuración del servicio:
-  - **Build Command:** `pip install -r requirements.txt`
-  - **Start Command:** `gunicorn app:app`
-  - **Runtime:** `python-3.12.7`
+The public service URL recorded for the existing deployment is:
 
-### 🥶 Nota sobre el plan gratuito (spin-down)
+<https://data-with-roots-1.onrender.com>
 
-El plan **free** de Render **duerme** la instancia tras un período de inactividad. Al volver a visitar el sitio, la **primera carga puede tardar ~50 segundos** mientras "despierta". No es un error.
-
-Consejos:
-1. **Esperar** la primera carga (una vez despierto, responde normalmente).
-2. **Keep-alive gratuito:** usar [UptimeRobot](https://uptimerobot.com) para sondear la URL cada 5 minutos y evitar que se duerma.
-3. **Upgrade (opcional):** el plan con pago elimina el spin-down.
+Render's free plan may sleep after inactivity, so the first request can take longer while the service wakes up. All application routes are public once the service is connected to the public repository.

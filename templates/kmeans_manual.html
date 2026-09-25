@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+{% block title %}K-Means Manual Exercise{% endblock %}
+{% block content %}
+
+<header class="hero-section hero-cyan">
+    <div class="container">
+        <span class="hero-tag">R2A2 &gt; Unsupervised Learning &gt; Manual Exercise</span>
+        <h1>Manual <span>K-Means</span></h1>
+        <p>A worked simulation of three K-Means iterations using 100 flight records and two numerical variables.</p>
+    </div>
+</header>
+
+<div class="container mt-5 mb-section">
+    <div class="mb-4">
+        <span class="section-badge">1. Dataset context</span>
+        <h2 class="section-title">What the records represent</h2>
+    </div>
+    <div class="card-dark mb-5">
+        <p>
+            The dataset simulates flight operations. Each record represents one flight and helps the exercise
+            explore natural operational groups without using a target label.
+        </p>
+        <div class="row g-3">
+            <div class="col-md-4"><div class="stat-card"><div class="num">{{ n_rows }}</div><div class="label">Flight records</div></div></div>
+            <div class="col-md-4"><div class="stat-card"><div class="num">2</div><div class="label">Numerical variables</div></div></div>
+            <div class="col-md-4"><div class="stat-card"><div class="num">3</div><div class="label">Initial centroids</div></div></div>
+        </div>
+        <ul class="features-list mt-3">
+            <li><strong>distance_km:</strong> flight distance in kilometers.</li>
+            <li><strong>duration_min:</strong> flight duration in minutes.</li>
+            <li><strong>Source:</strong> <code>data/flights_manual_100.csv</code>, a reproducible educational dataset generated with a fixed random seed.</li>
+        </ul>
+    </div>
+
+    <div class="mb-4">
+        <span class="section-badge">2. Initial centroids</span>
+        <h2 class="section-title">Starting points in the feature space</h2>
+    </div>
+    <div class="card-dark mb-5">
+        <p>The three initial centroids are selected to represent short, medium, and long flight profiles:</p>
+        <div class="row g-3">
+            {% for centroid in initial_centroids %}
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="num">C{{ loop.index }}</div>
+                    <div class="label">({{ centroid[0] }}, {{ centroid[1] }})</div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="plot-wrapper p-2 mt-4" style="background-color: #0b0f19; border-radius: 12px; border: 1px solid var(--border-color);">
+            <img src="data:image/png;base64,{{ initial_plot }}" class="img-fluid rounded" alt="Initial flight records and centroids">
+        </div>
+    </div>
+
+    <div class="mb-4">
+        <span class="section-badge">3. Calculation method</span>
+        <h2 class="section-title">Distance, assignment, and centroid update</h2>
+    </div>
+    <div class="card-dark mb-5">
+        <p>For every record, the Euclidean distance to each centroid is calculated:</p>
+        <div class="code-snippet">d = sqrt((distance_km - centroid_km)^2 + (duration_min - centroid_min)^2)</div>
+        <ol class="features-list">
+            <li>Assign the record to the centroid with the smallest distance.</li>
+            <li>Calculate the new centroid as the mean of the coordinates assigned to that cluster.</li>
+            <li>Repeat the process exactly three times.</li>
+        </ol>
+        <p class="small text-muted mb-0">The application reproduces the same calculations deterministically, making every distance, assignment, and update auditable.</p>
+    </div>
+
+    <div class="mb-4">
+        <span class="section-badge">4. Iteration summary</span>
+        <h2 class="section-title">Cluster sizes and within-cluster dispersion</h2>
+    </div>
+    <div class="card-dark mb-5">
+        <p><strong>WCSS</strong> is the within-cluster sum of squares. The variance column divides WCSS by the 100 records. Lower values indicate tighter clusters after the update.</p>
+        <div class="table-responsive">
+            <table class="table table-dark table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Iteration</th>
+                        <th>Cluster sizes</th>
+                        <th>WCSS before update</th>
+                        <th>WCSS after update</th>
+                        <th>Variance proxy</th>
+                        <th>Updated centroids (km, min)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in iterations %}
+                    <tr>
+                        <td><strong>{{ item.iteration }}</strong></td>
+                        <td>[{{ item.counts[0] }}, {{ item.counts[1] }}, {{ item.counts[2] }}]</td>
+                        <td>{{ item.wcss_before }}</td>
+                        <td>{{ item.wcss_after }}</td>
+                        <td>{{ item.within_cluster_variance }}</td>
+                        <td>
+                            {% for centroid in item.centroids_after %}
+                            ({{ centroid[0] }}, {{ centroid[1] }}){% if not loop.last %}<br>{% endif %}
+                            {% endfor %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {% for item in iterations %}
+    <div class="mb-4">
+        <span class="section-badge">5.{{ item.iteration }} Iteration {{ item.iteration }}</span>
+        <h2 class="section-title">Assignments and updated centroids</h2>
+    </div>
+    <div class="card-dark mb-5">
+        <div class="plot-wrapper p-2" style="background-color: #0b0f19; border-radius: 12px; border: 1px solid var(--border-color);">
+            <img src="data:image/png;base64,{{ item.plot }}" class="img-fluid rounded" alt="K-Means iteration {{ item.iteration }}">
+        </div>
+        <div class="row g-3 mt-3">
+            <div class="col-md-6">
+                <h4>Centroids before the update</h4>
+                <ul class="features-list mb-0">
+                    {% for centroid in item.centroids_before %}
+                    <li>C{{ loop.index }}: ({{ centroid[0] }}, {{ centroid[1] }})</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <h4>Centroids after the update</h4>
+                <ul class="features-list mb-0">
+                    {% for centroid in item.centroids_after %}
+                    <li>C{{ loop.index }}: ({{ centroid[0] }}, {{ centroid[1] }})</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <p class="mt-3 mb-0"><strong>Records assigned:</strong> C1 = {{ item.counts[0] }}, C2 = {{ item.counts[1] }}, C3 = {{ item.counts[2] }}.</p>
+        <details class="mt-4">
+            <summary class="text-light fw-bold">Show all {{ item.rows|length }} distance and assignment rows</summary>
+            <div class="table-responsive mt-3" style="max-height: 520px; overflow-y: auto;">
+                <table class="table table-dark table-striped table-sm align-middle">
+                    <thead>
+                        <tr>
+                            <th>Flight</th>
+                            <th>Distance (km)</th>
+                            <th>Duration (min)</th>
+                            <th>d(C1)</th>
+                            <th>d(C2)</th>
+                            <th>d(C3)</th>
+                            <th>Assignment</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in item.rows %}
+                        <tr>
+                            <td>{{ row.flight_id }}</td>
+                            <td>{{ row.distance_km }}</td>
+                            <td>{{ row.duration_min }}</td>
+                            <td>{{ row.d1 }}</td>
+                            <td>{{ row.d2 }}</td>
+                            <td>{{ row.d3 }}</td>
+                            <td><span class="badge text-bg-info">Cluster {{ row.assigned_cluster }}</span></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </details>
+    </div>
+    {% endfor %}
+
+    <div class="mb-4">
+        <span class="section-badge">6. Convergence comparison</span>
+        <h2 class="section-title">WCSS after each iteration</h2>
+    </div>
+    <div class="card-dark mb-5 text-center">
+        <p class="text-muted">A decreasing WCSS indicates that each centroid update reduces the squared distance of the assigned records.</p>
+        <div class="plot-wrapper p-2" style="background-color: #0b0f19; border-radius: 12px; border: 1px solid var(--border-color);">
+            <img src="data:image/png;base64,{{ wcss_plot }}" class="img-fluid rounded" alt="WCSS comparison across three iterations">
+        </div>
+    </div>
+
+    <div class="mb-4">
+        <span class="section-badge">7. Final interpretation</span>
+        <h2 class="section-title">Result after three iterations</h2>
+    </div>
+    <div class="row g-3 mb-5">
+        {% for profile in final_profiles %}
+        <div class="col-md-4">
+            <div class="card-dark h-100">
+                <h3>{{ profile.name }}</h3>
+                <p><strong>Records:</strong> {{ profile.count }}</p>
+                <p><strong>Centroid:</strong> ({{ profile.centroid[0] }}, {{ profile.centroid[1] }})</p>
+                <p><strong>Means:</strong> {{ profile.mean_distance_km }} km and {{ profile.mean_duration_min }} min.</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="card-dark mb-5">
+        <p class="mb-0">The final groups are ordered by distance for interpretation. The short-haul group has the smallest distances and durations, the medium-haul group is centered in the feature space, and the long-haul group has the largest values. The remaining dispersion within each group reflects individual route and aircraft characteristics.</p>
+    </div>
+
+    <a class="btn btn-grad" href="/unsupervised/kmeans/application">Continue to the Scikit-Learn application</a>
+</div>
+
+{% endblock %}

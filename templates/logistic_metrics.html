@@ -22,10 +22,10 @@
             <img src="data:image/png;base64,{{ cm_plot }}" alt="Confusion Matrix - Logistic Regression" style="max-width:100%;">
         </div>
         <div class="row g-3 mt-3">
-            <div class="col-md-3 col-6"><div class="stat-card"><div class="num text-success">{{ cm.tp }}</div><div class="label">TP - True Positives (predijo "se va" y era correcto)</div></div></div>
-            <div class="col-md-3 col-6"><div class="stat-card"><div class="num text-info">{{ cm.tn }}</div><div class="label">TN - True Negatives (predijo "se queda" y era correcto)</div></div></div>
-            <div class="col-md-3 col-6"><div class="stat-card"><div class="num text-warning">{{ cm.fp }}</div><div class="label">FP - False Positives (falsa alarma de abandono)</div></div></div>
-            <div class="col-md-3 col-6"><div class="stat-card"><div class="num text-danger">{{ cm.fn }}</div><div class="label">FN - False Negatives (no detectó el abandono)</div></div></div>
+            <div class="col-md-3 col-6"><div class="stat-card"><div class="num text-success">{{ cm.tp }}</div><div class="label">TP - True Positives (predicted churn correctly)</div></div></div>
+            <div class="col-md-3 col-6"><div class="stat-card"><div class="num text-info">{{ cm.tn }}</div><div class="label">TN - True Negatives (predicted stay correctly)</div></div></div>
+            <div class="col-md-3 col-6"><div class="stat-card"><div class="num text-warning">{{ cm.fp }}</div><div class="label">FP - False Positives (false churn alarms)</div></div></div>
+            <div class="col-md-3 col-6"><div class="stat-card"><div class="num text-danger">{{ cm.fn }}</div><div class="label">FN - False Negatives (missed churn cases)</div></div></div>
         </div>
         <p class="text-muted mt-3 mb-0">
             <strong>Interpretation:</strong> On the testing set, the model correctly identifies most clients that truly churned

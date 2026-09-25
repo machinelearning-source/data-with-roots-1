@@ -6,13 +6,14 @@ import pandas as pd
 import matplotlib
 matplotlib.use('Agg')  # Headless server mode without GUI
 import matplotlib.pyplot as plt
-from flask import Flask, render_template, request
+from flask import Flask, jsonify, render_template, request
 from sklearn.linear_model import LinearRegression, LogisticRegression, SGDClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import (accuracy_score, precision_score, recall_score,
                              f1_score, confusion_matrix)
+import kmeans_ml as km
 
 app = Flask(__name__)
 
@@ -267,10 +268,10 @@ def plot_credit():
     m1 = ~m0
     ax.scatter(credit_df.loc[m0, 'income_usd'], credit_df.loc[m0, 'credit_score'],
                s=30, alpha=0.5, color='#4cc9f0', edgecolors='none',
-               label='Class 0 = Bajo riesgo (Low Risk)')
+                label='Class 0 = Low Risk')
     ax.scatter(credit_df.loc[m1, 'income_usd'], credit_df.loc[m1, 'credit_score'],
                s=30, alpha=0.5, color='#e94560', edgecolors='none',
-               label='Class 1 = Alto riesgo (High Risk)')
+                label='Class 1 = High Risk')
     ax.set_xlabel('Monthly Income (income_usd)', fontsize=11, color='#e2e8f0', labelpad=10)
     ax.set_ylabel('Credit Score (credit_score)', fontsize=11, color='#e2e8f0', labelpad=10)
     ax.set_title('SGD Classifier: Credit Risk (income vs credit score, by class)', fontsize=13, fontweight='bold', color='#f1f5f9', pad=14)
@@ -351,11 +352,11 @@ def logistic_application():
                 cls = int(p >= 0.5)
                 prob = round(p, 4)
                 prediction = cls
-                class_label = 'Churn (Cliente se va)' if cls == 1 else 'Stay (Cliente se queda)'
-                class_meaning = ('El modelo clasifica al cliente como PROPENSO A ABANDONAR el servicio, '
-                                 'recomendando aplicar una estrategia de retenci\u00f3n.') if cls == 1 else \
-                                ('El modelo clasifica al cliente como ESTABLE (poco riesgo de abandono), '
-                                 'sin necesidad de acciones de retenci\u00f3n urgentes.')
+                class_label = 'Churn (Client leaves)' if cls == 1 else 'Stay (Client remains)'
+                class_meaning = ('The model classifies the client as likely to leave the service; '
+                                 'a retention strategy is recommended.') if cls == 1 else \
+                                ('The model classifies the client as stable, with low risk of leaving; '
+                                 'urgent retention actions are not required.')
         except ValueError:
             error = 'Please enter a valid numeric value (e.g., 12.0 or 30.5).'
     plot = plot_churn(pred_tenure=tenure_input if prediction is not None else None,
@@ -414,11 +415,11 @@ def sgd_application():
                 cls = int(p >= 0.5)
                 prob = round(p, 4)
                 prediction = cls
-                class_label = 'High Risk (Alto riesgo)' if cls == 1 else 'Low Risk (Bajo riesgo)'
-                class_meaning = ('El solicitante fue clasificado como ALTO RIESGO de impago; '
-                                 'el pr\u00e9stamo deber\u00eda revisarse o rechazarse.') if cls == 1 else \
-                                ('El solicitante fue clasificado como BAJO RIESGO de impago; '
-                                 'el pr\u00e9stamo puede aprobarse.')
+                class_label = 'High Risk' if cls == 1 else 'Low Risk'
+                class_meaning = ('The applicant was classified as high repayment risk; '
+                                 'the loan should be reviewed or rejected.') if cls == 1 else \
+                                ('The applicant was classified as low repayment risk; '
+                                 'the loan may be approved.')
         except ValueError:
             error = 'Please enter valid numeric values in all four fields.'
     plot = plot_credit()
@@ -443,6 +444,81 @@ def sgd_metrics():
     plot = plot_confusion_matrix(cm_credit, 'Confusion Matrix - SGD Classifier (Credit Risk)')
     return render_template('sgd_metrics.html', cm=cm, metrics=credit_metrics,
                            cm_plot=plot, test_size=int(len(Xcr_te)))
+
+
+@app.route('/unsupervised/kmeans/concepts')
+@app.route('/ml/unsupervised/kmeans/concepts')
+def kmeans_concepts():
+    return render_template('kmeans_concepts.html')
+
+
+@app.route('/unsupervised/kmeans/manual')
+@app.route('/ml/unsupervised/kmeans/manual')
+def kmeans_manual():
+    result = km.manual_view()
+    iterations = []
+    for item in result['iterations']:
+        iterations.append({
+            'iteration': item['iteration'],
+            'rows': item['rows'],
+            'counts': item['counts'],
+            'wcss_before': f"{item['wcss_before']:,.2f}",
+            'wcss_after': f"{item['wcss_after']:,.2f}",
+            'within_cluster_variance': f"{item['within_cluster_variance']:,.2f}",
+            'centroids_before': [
+                [float(value) for value in centroid]
+                for centroid in item['centroids_before']
+            ],
+            'centroids_after': [
+                [float(value) for value in centroid]
+                for centroid in item['centroids_after']
+            ],
+            'plot': item['plot'],
+        })
+    return render_template(
+        'kmeans_manual.html',
+        n_rows=result['n_rows'],
+        initial_centroids=result['initial_centroids'],
+        initial_plot=result['initial_plot'],
+        iterations=iterations,
+        wcss_plot=result['wcss_plot'],
+        final_profiles=result['final_profiles'],
+    )
+
+
+@app.route('/unsupervised/kmeans/application')
+@app.route('/ml/unsupervised/kmeans/application')
+def kmeans_application():
+    return render_template('kmeans_application.html', **km.application_view())
+
+
+@app.route('/supervised/logistic-regression/flight-delay', methods=['GET', 'POST'])
+@app.route('/unsupervised/kmeans/classification', methods=['GET', 'POST'])
+@app.route('/ml/unsupervised/kmeans/classification', methods=['GET', 'POST'])
+def kmeans_classification():
+    result = km.classification_application()
+    error = None
+    prediction = None
+    if request.method == 'POST':
+        try:
+            distance = float(request.form.get('distance', '').strip())
+            duration = float(request.form.get('duration', '').strip())
+            if distance <= 0 or duration <= 0:
+                raise ValueError
+            prediction = km.predict_flight(distance, duration)
+        except (TypeError, ValueError):
+            error = 'Enter positive numeric values for distance and duration.'
+    return render_template(
+        'kmeans_classification.html',
+        **result,
+        error=error,
+        prediction=prediction,
+    )
+
+
+@app.route('/health')
+def health():
+    return jsonify({'status': 'ok', 'service': 'data-with-roots'})
 
 
 if __name__ == '__main__':

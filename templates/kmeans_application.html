@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+{% block title %}K-Means Clustering Application{% endblock %}
+{% block content %}
+
+<header class="hero-section hero-cyan">
+    <div class="container">
+        <span class="hero-tag">R2A2 &gt; Unsupervised Learning &gt; Clustering Application</span>
+        <h1>Flight <span>Segmentation</span></h1>
+        <p>Scikit-Learn K-Means groups {{ n_records }} flight records by distance and duration, then evaluates the segmentation with silhouette analysis.</p>
+    </div>
+</header>
+
+<div class="container mt-5 mb-section">
+    <div class="mb-4">
+        <span class="section-badge">1. Problem context and justification</span>
+        <h2 class="section-title">Why cluster flight operations?</h2>
+    </div>
+    <div class="card-dark mb-5">
+        <p>
+            The selected topic is <strong>flight segmentation by distance and duration</strong>. The application identifies
+            natural operational segments without predefined labels, which can support route planning, aircraft utilization,
+            and service-level analysis.
+        </p>
+        <ul class="features-list">
+            <li><strong>Records:</strong> {{ n_records }} synthetic but reproducible flight observations.</li>
+            <li><strong>Feature 1:</strong> <code>distance_km</code>, measured in kilometers.</li>
+            <li><strong>Feature 2:</strong> <code>duration_min</code>, measured in minutes.</li>
+            <li><strong>Target:</strong> none for clustering. The optional <code>delayed</code> column is only used later for the supervised Logistic Regression exercise.</li>
+        </ul>
+        <p class="mb-0">The data are appropriate for a reproducible academic demonstration because both clustering variables are numerical, the sample exceeds 1,000 records, and the records contain enough variation to reveal short-, medium-, and long-haul profiles.</p>
+    </div>
+
+    <div class="mb-4">
+        <span class="section-badge">2. Preprocessing</span>
+        <h2 class="section-title">Steps applied before K-Means</h2>
+    </div>
+    <div class="card-dark mb-5">
+        <ol class="features-list">
+            <li>Read <code>data/flights_dataset.csv</code> with Pandas.</li>
+            <li>Select only the numerical columns <code>distance_km</code> and <code>duration_min</code>.</li>
+            <li>Validate that the required columns exist, contain numeric finite values, and provide at least 1,000 records.</li>
+            <li>Apply <code>StandardScaler</code> so distance in kilometers and duration in minutes contribute comparably.</li>
+            <li>Fit K-Means with <code>K=3</code>, <code>init="k-means++"</code>, <code>random_state=42</code>, and <code>n_init=10</code>.</li>
+        </ol>
+        <div class="code-snippet">
+            scaler = StandardScaler()<br>
+            X_scaled = scaler.fit_transform(df[["distance_km", "duration_min"]])<br>
+            model = KMeans(n_clusters=3, init="k-means++", random_state=42, n_init=10)<br>
+            labels = model.fit_predict(X_scaled)
+        </div>
+    </div>
+
+    <div class="mb-4">
+        <span class="section-badge">3. K-Means configuration</span>
+        <h2 class="section-title">Why use three clusters?</h2>
+    </div>
+    <div class="card-dark mb-5">
+        <p><code>K=3</code> is selected from the operational hypothesis of short-haul, medium-haul, and long-haul flight profiles. The candidate values below provide an internal comparison:</p>
+        <div class="table-responsive">
+            <table class="table table-dark table-hover align-middle">
+                <thead><tr><th>K</th><th>Inertia / WCSS</th><th>Silhouette</th></tr></thead>
+                <tbody>
+                    {% for score in k_scores %}
+                    <tr><td>{{ score.k }}</td><td>{{ score.inertia }}</td><td>{{ score.silhouette }}</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <p class="small text-muted mb-0">Inertia is expected to fall as K increases, so it is interpreted together with silhouette separation and the domain hypothesis rather than used alone.</p>
+    </div>
+
+    <div class="mb-4">
+        <span class="section-badge">4. Results</span>
+        <h2 class="section-title">Cluster sizes and centroids</h2>
+    </div>
+    <div class="card-dark mb-5">
+        <div class="table-responsive">
+            <table class="table table-dark table-hover align-middle">
+                <thead>
+                    <tr><th>Cluster</th><th>Records</th><th>Share</th><th>Centroid (km, min)</th><th>Mean distance</th><th>Mean duration</th><th>Delay rate</th></tr>
+                </thead>
+                <tbody>
+                    {% for cluster in clusters %}
+                    <tr>
+                        <td><span class="badge text-bg-info">Cluster {{ cluster.id }}</span><br><strong>{{ cluster.name }}</strong></td>
+                        <td>{{ cluster.count }}</td>
+                        <td>{{ cluster.share }}%</td>
+                        <td>({{ cluster.centroid[0] }}, {{ cluster.centroid[1] }})</td>
+                        <td>{{ cluster.mean_distance_km }} km</td>
+                        <td>{{ cluster.mean_duration_min }} min</td>
+                        <td>{{ cluster.delay_rate }}%</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="mb-4">
+        <span class="section-badge">5. Visualization</span>
+        <h2 class="section-title">Clusters and centroids</h2>
+    </div>
+    <div class="card-dark mb-5 text-center">
+        <div class="plot-wrapper p-2" style="background-color: #0b0f19; border-radius: 12px; border: 1px solid var(--border-color);">
+            <img src="data:image/png;base64,{{ plot }}" class="img-fluid rounded" alt="K-Means flight clusters and centroids">
+        </div>
+    </div>
+
+    <div class="mb-4">
+        <span class="section-badge">6. Internal evaluation</span>
+        <h2 class="section-title">Silhouette score</h2>
+    </div>
+    <div class="card-dark mb-5">
+        <div class="row g-3 align-items-center">
+            <div class="col-md-5"><div class="stat-card"><div class="num text-success">{{ silhouette }}</div><div class="label">Silhouette score</div></div></div>
+            <div class="col-md-7">
+                <p>{{ silhouette_interpretation }}</p>
+                <p class="mb-0">The theoretical range is approximately <strong>-1 to 1</strong>. A value above 0.5 generally indicates useful separation, 0.25 to 0.5 indicates a structure that needs caution, and values below 0.25 indicate weak separation.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="mb-4">
+        <span class="section-badge">7. Cluster interpretation</span>
+        <h2 class="section-title">Characteristics in the flight context</h2>
+    </div>
+    <div class="row g-3 mb-5">
+        {% for cluster in clusters %}
+        <div class="col-md-4">
+            <div class="card-dark h-100">
+                <h3>Cluster {{ cluster.id }}: {{ cluster.name }}</h3>
+                <p>This group contains <strong>{{ cluster.count }} flights ({{ cluster.share }}%)</strong> centered at <strong>{{ cluster.centroid[0] }} km</strong> and <strong>{{ cluster.centroid[1] }} minutes</strong>.</p>
+                <p>Distance ranges from {{ cluster.min_distance_km }} to {{ cluster.max_distance_km }} km and duration ranges from {{ cluster.min_duration_min }} to {{ cluster.max_duration_min }} minutes.</p>
+                <p class="mb-0">The observed delay rate is {{ cluster.delay_rate }}%, shown as context only; the target was not used by K-Means.</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="mb-4">
+        <span class="section-badge">8. Evidence table</span>
+        <h2 class="section-title">All {{ n_records }} assigned records</h2>
+    </div>
+    <div class="card-dark mb-5">
+        <p>The table contains every record and its assigned cluster. The <code>delayed</code> column is displayed for traceability but is not an input to the clustering algorithm.</p>
+        <details>
+            <summary class="text-light fw-bold">Show all {{ records|length }} records</summary>
+            <div class="table-responsive mt-3" style="max-height: 600px; overflow-y: auto;">
+                <table class="table table-dark table-striped table-sm align-middle">
+                    <thead><tr><th>Flight</th><th>Distance (km)</th><th>Duration (min)</th><th>Delayed</th><th>Cluster</th></tr></thead>
+                    <tbody>
+                        {% for row in records %}
+                        <tr>
+                            <td>{{ row.flight_id }}</td>
+                            <td>{{ row.distance_km }}</td>
+                            <td>{{ row.duration_min }}</td>
+                            <td>{{ row.delayed }}</td>
+                            <td><span class="badge text-bg-info">Cluster {{ row.Cluster }}</span></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </details>
+    </div>
+
+    <a class="btn btn-grad" href="/supervised/logistic-regression/flight-delay">Continue to Logistic Regression delay prediction</a>
+</div>
+
+{% endblock %}
