@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}Unsupervised Learning and K-Means Concepts{% endblock %}
+{% block content %}
+
+<header class="hero-section hero-cyan">
+    <div class="container">
+        <span class="hero-tag">R2A2 &gt; Unsupervised Learning &gt; Concepts</span>
+        <h1>K-Means <span>Clustering</span></h1>
+        <p>Core concepts for discovering natural groups in flight records using distance and duration.</p>
+    </div>
+</header>
+
+<div class="container mt-5 mb-section">
+    <div class="mb-4">
+        <span class="section-badge">1. Unsupervised learning</span>
+        <h2 class="section-title">Learning without labels</h2>
+    </div>
+    <div class="card-dark mb-5">
+        <p>Unsupervised learning works with input features but without a target variable. The algorithm searches for structure that is useful for interpretation rather than trying to predict a supplied answer.</p>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="list-group list-group-flush">
+                    <div class="list-group-item"><strong>Input:</strong> feature matrix X</div>
+                    <div class="list-group-item"><strong>Output:</strong> groups or structure</div>
+                    <div class="list-group-item"><strong>Teacher:</strong> no labeled target</div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="list-group list-group-flush">
+                    <div class="list-group-item"><strong>Task:</strong> clustering</div>
+                    <div class="list-group-item"><strong>Algorithm:</strong> K-Means</div>
+                    <div class="list-group-item"><strong>Validation:</strong> silhouette and WCSS</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mb-4">
+        <span class="section-badge">2. Clustering</span>
+        <h2 class="section-title">Grouping similar observations</h2>
+    </div>
+    <div class="card-dark mb-5">
+        <p>Clustering places observations in the same group when they are similar according to the selected features. In this project, the features are:</p>
+        <ul class="features-list">
+            <li><code>distance_km</code>: how far the flight travels.</li>
+            <li><code>duration_min</code>: how long the flight takes.</li>
+        </ul>
+        <p class="mb-0">The expected segments are short-haul, medium-haul, and long-haul flight profiles. K-Means discovers these groups from the data without a cluster label.</p>
+    </div>
+
+    <div class="mb-4">
+        <span class="section-badge">3. K-Means algorithm</span>
+        <h2 class="section-title">Centroids and iterative updates</h2>
+    </div>
+    <div class="card-dark mb-5">
+        <ol class="features-list">
+            <li>Choose the number of clusters, K, and initialize one centroid per cluster.</li>
+            <li>Assign every observation to its nearest centroid using Euclidean distance.</li>
+            <li>Update each centroid by averaging the coordinates of its assigned observations.</li>
+            <li>Repeat the assignment and update steps until centroids stabilize or the iteration limit is reached.</li>
+        </ol>
+        <div class="code-snippet">d(p, c) = sqrt((x - c<sub>x</sub>)<sup>2</sup> + (y - c<sub>y</sub>)<sup>2</sup>)</div>
+        <p class="mb-0">A centroid is a representative center, not a real flight. The application standardizes the two features before the Scikit-Learn run so their different units do not dominate the distance calculation.</p>
+    </div>
+
+    <div class="mb-4">
+        <span class="section-badge">4. Manual starting point</span>
+        <h2 class="section-title">Three initial centroids</h2>
+    </div>
+    <div class="card-dark mb-5">
+        <div class="row g-3">
+            <div class="col-md-4"><div class="stat-card"><div class="num">C1</div><div class="label">(400 km, 55 min)</div></div></div>
+            <div class="col-md-4"><div class="stat-card"><div class="num">C2</div><div class="label">(1600 km, 165 min)</div></div></div>
+            <div class="col-md-4"><div class="stat-card"><div class="num">C3</div><div class="label">(2700 km, 280 min)</div></div></div>
+        </div>
+        <p class="mt-3 mb-0">The manual page shows the distances, assignments, updated centroids, and dispersion for all three iterations.</p>
+    </div>
+
+    <div class="mb-4">
+        <span class="section-badge">5. Evaluation</span>
+        <h2 class="section-title">Silhouette score</h2>
+    </div>
+    <div class="card-dark mb-5">
+        <p>The silhouette score compares the distance of each observation to its own cluster with the distance to the nearest other cluster. Its approximate range is -1 to 1. Higher values indicate better separation, while values near zero indicate overlapping groups.</p>
+        <p class="mb-0">The score is calculated on standardized values because clustering distances are computed after preprocessing.</p>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,8 +1,9 @@
 services:
   - type: web
     name: data-with-roots-1
-    env: python
     runtime: python-3.12.7
+    branch: R2A2
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn app:app
+    healthCheckPath: /health
     plan: free
