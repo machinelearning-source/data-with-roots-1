@@ -1,0 +1,587 @@
+{% extends "base.html" %}
+{% block title %}Reinforcement Learning - Concepts{% endblock %}
+{% block content %}
+
+<header class="hero-section">
+    <div class="container">
+        <span class="hero-tag">Reinforcement Learning &gt; Part 1 of 2</span>
+        <h1>Reinforcement Learning <span>Concepts</span></h1>
+        <p>How an agent learns a policy from rewards instead of from labelled examples &mdash;
+           the fourth pillar of Machine Learning, and the one that closes the loop on our project.</p>
+    </div>
+</header>
+
+<div class="container mt-5 mb-section">
+
+    <div class="alert alert-info mb-4">
+        <strong>Reading guide.</strong> This page is Part 1 of 2. It explains the theory with the
+        10&times;10 grid used in our application as a running example. Part 2,
+        <a class="link-chip" href="{{ url_for('rl_application') }}">RL Application</a>,
+        lets you train the agent yourself.
+    </div>
+
+    <div class="card-dark mb-4">
+        <span class="section-badge"># 1. Name and Definition</span>
+        <h3 class="section-title">What is Reinforcement Learning?</h3>
+        <p>
+            <strong>Reinforcement Learning (RL)</strong> is the area of Machine Learning concerned with
+            <strong>how an agent learns to choose actions in an environment in order to maximise a
+            cumulative reward signal</strong>. Unlike the supervised models in this project, there are no
+            target labels: the only feedback is a scalar reward, and the system has to discover on its own
+            which behaviour pays off.
+        </p>
+        <p>The formal definition in terms of the tuple <code>(S, A, P, R, &gamma;)</code>:</p>
+        <ul class="features-list">
+            <li><strong>S (States)</strong>: the set of possible situations the agent can be in.</li>
+            <li><strong>A (Actions)</strong>: the set of moves available in each state.</li>
+            <li><strong>P (Transition probability)</strong>: how the environment reacts, <code>P(s'|s,a)</code>.</li>
+            <li><strong>R (Reward)</strong>: the immediate feedback <code>R(s,a,s')</code> for a transition.</li>
+            <li><strong>&gamma; (Discount factor)</strong>: how much future reward matters, in <code>[0,1]</code>.</li>
+        </ul>
+        <p>
+            In our application the agent is a delivery robot on a 10&times;10 grid. States are cells,
+            actions are <code>Up / Down / Left / Right</code>, transitions are deterministic, and the reward
+            tells the agent whether it moved safely, hit a wall, entered a danger zone or reached the target.
+        </p>
+    </div>
+
+    <div class="card-dark mb-4">
+        <span class="section-badge"># 2. How It Works</span>
+        <h3 class="section-title">The agent-environment loop</h3>
+        <p>
+            Training is an endless cycle of <em>observe, decide, act, get rewarded</em>. Each pass through the
+            grid is called an <strong>episode</strong>, and the total reward collected during an episode is the
+            <strong>return</strong>. The agent's objective is to maximise the expected return, and because
+            rewards are delayed &mdash; you only learn that a wall was a mistake after you have bumped into it &mdash;
+            it must look several steps ahead.
+        </p>
+
+        <div class="accordion mb-4" id="loopAccordion">
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#step1">
+                        Step 1 &mdash; Observe the current state <span class="ms-2 badge badge-soft">s</span>
+                    </button>
+                </h2>
+                <div id="step1" class="accordion-collapse collapse show" data-bs-parent="#loopAccordion">
+                    <div class="accordion-body">
+                        The agent perceives the environment and receives its state. On our grid this is the
+                        coordinate of the cell it currently occupies, for example <code>(4, 7)</code>.
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#step2">
+                        Step 2 &mdash; Select an action with the current policy <span class="ms-2 badge badge-soft">&pi;(a|s)</span>
+                    </button>
+                </h2>
+                <div id="step2" class="accordion-collapse collapse" data-bs-parent="#loopAccordion">
+                    <div class="accordion-body">
+                        A <strong>policy</strong> maps states to actions. During learning the policy is
+                        <strong>&epsilon;-greedy</strong>: with probability <code>&epsilon;</code> it acts randomly to
+                        explore, otherwise it picks the action with the highest Q-value to exploit what it already knows.
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#step3">
+                        Step 3 &mdash; Receive the reward and the next state <span class="ms-2 badge badge-soft">r, s'</span>
+                    </button>
+                </h2>
+                <div id="step3" class="accordion-collapse collapse" data-bs-parent="#loopAccordion">
+                    <div class="accordion-body">
+                        The environment applies the action and answers with a reward and the resulting state.
+                        On our grid a valid move gives <code>-1</code>, a blocked move <code>-10</code>,
+                        entering a danger zone <code>-15</code> and reaching the target <code>+100</code>.
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#step4">
+                        Step 4 &mdash; Update the Q-values <span class="ms-2 badge badge-soft">Q(s,a)</span>
+                    </button>
+                </h2>
+                <div id="step4" class="accordion-collapse collapse" data-bs-parent="#loopAccordion">
+                    <div class="accordion-body">
+                        The agent revises its estimate of how good that action was, blending the reward it just
+                        received with the best value it can expect from where it now stands.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h4 class="mt-4">The Bellman optimality update</h4>
+        <div class="code-snippet">
+            Q(s,a) &larr; Q(s,a) + &alpha; &middot; [ r + &gamma; &middot; max<sub>a'</sub> Q(s',a') &minus; Q(s,a) ]
+        </div>
+        <p>
+            <code>Q(s,a)</code> is the estimated return of taking action <code>a</code> in state <code>s</code> and then
+            continuing optimally. The bracket is the <strong>Temporal Difference error</strong>: the gap between what the
+            agent expected and what actually happened. <code>&alpha;</code> is the learning rate, controlling how much of
+            that correction is absorbed.
+        </p>
+    </div>
+
+    <div class="card-dark mb-4">
+        <span class="section-badge"># 3. Problems It Can Solve</span>
+        <h3 class="section-title">Where reinforcement learning applies</h3>
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="card-dark h-100">
+                    <h4 class="section-title">Sequential decisions</h4>
+                    <ul class="features-list">
+                        <li><strong>Robotics</strong> &mdash; walking, grasping, path planning (our grid).</li>
+                        <li><strong>Game playing</strong> &mdash; AlphaGo, chess, Atari.</li>
+                        <li><strong>Autonomous driving</strong> &mdash; lane changes and braking.</li>
+                        <li><strong>Resource scheduling</strong> &mdash; datacentres, supply chains.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card-dark h-100">
+                    <h4 class="section-title">Control and optimisation</h4>
+                    <ul class="features-list">
+                        <li><strong>Energy management</strong> &mdash; HVAC and smart grids.</li>
+                        <li><strong>Portfolio trading</strong> &mdash; adaptive position sizing.</li>
+                        <li><strong>Recommendation</strong> &mdash; long-term user engagement.</li>
+                        <li><strong>Telecom</strong> &mdash; handover and power control.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <p class="mt-3">
+            The distinguishing feature is <strong>consequences that unfold over time</strong>: an action changes the
+            options available later, so greedy short-term decisions can be globally wrong.
+        </p>
+    </div>
+
+    <div class="card-dark mb-4">
+        <span class="section-badge"># 4. Main Characteristics</span>
+        <h3 class="section-title">Properties of the problem</h3>
+        <ul class="features-list">
+            <li><strong>Learning by trial and error</strong> &mdash; no labels, only rewards.</li>
+            <li><strong>Delayed feedback</strong> &mdash; consequences may arrive many steps later.</li>
+            <li><strong>The exploration/exploitation trade-off</strong> &mdash; the agent must both try new things and cash in what it knows.</li>
+            <li><strong>Sequential and stateful</strong> &mdash; each decision alters the next.</li>
+            <li><strong>Rewards may conflict</strong> &mdash; a locally good move can be globally bad.</li>
+            <li><strong>Credit assignment</strong> &mdash; working out which past action deserves the blame or the credit.</li>
+        </ul>
+    </div>
+
+    <div class="card-dark mb-4">
+        <span class="section-badge"># 5. Types / Variants</span>
+        <h3 class="section-title">Families of reinforcement learning</h3>
+        <div class="accordion" id="typesAccordion">
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#t1">
+                        Model-based vs model-free <span class="ms-2 badge badge-soft-green">core distinction</span>
+                    </button>
+                </h2>
+                <div id="t1" class="accordion-collapse collapse show" data-bs-parent="#typesAccordion">
+                    <div class="accordion-body">
+                        <strong>Model-free</strong> agents learn the value function directly from experience, with no
+                        knowledge of the transition probabilities. <strong>Model-based</strong> agents first learn a model
+                        of the environment and plan with it. Our application is <strong>model-free</strong>.
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#t2">
+                        Value-based vs policy-based
+                    </button>
+                </h2>
+                <div id="t2" class="accordion-collapse collapse" data-bs-parent="#typesAccordion">
+                    <div class="accordion-body">
+                        <strong>Value-based</strong> methods estimate <code>Q(s,a)</code> and act greedily &mdash; this is
+                        Q-Learning and SARSA. <strong>Policy-based</strong> methods learn the policy
+                        <code>&pi;(a|s)</code> directly, which is what Policy Gradient methods and actor-critic do.
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#t3">
+                        On-policy vs off-policy
+                    </button>
+                </h2>
+                <div id="t3" class="accordion-collapse collapse" data-bs-parent="#typesAccordion">
+                    <div class="accordion-body">
+                        <strong>On-policy</strong> algorithms, such as SARSA, only learn from the data generated by the
+                        current policy. <strong>Off-policy</strong> algorithms, such as Q-Learning, can learn from data
+                        collected by any policy, including exploratory ones.
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#t4">
+                        Tabular vs approximation
+                    </button>
+                </h2>
+                <div id="t4" class="accordion-collapse collapse" data-bs-parent="#typesAccordion">
+                    <div class="accordion-body">
+                        <strong>Tabular</strong> methods keep an explicit <code>Q</code> row per state, which is only possible
+                        for small finite spaces. When the state space is too large &mdash; images, continuous control &mdash;
+                        the value function is <strong>approximated</strong> with a neural network or a linear model,
+                        exactly as our application approximates it with <code>SGDRegressor</code>.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-dark mb-4">
+        <span class="section-badge"># 6. Applications</span>
+        <h3 class="section-title">Reinforcement learning at work</h3>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card-dark h-100 text-center">
+                    <span class="card-icon"><i class="bi bi-robot"></i></span>
+                    <h5>Robotics</h5>
+                    <p class="text-muted mb-0">Locomotion and manipulation trained from simulation, then transferred to real hardware.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card-dark h-100 text-center">
+                    <span class="card-icon"><i class="bi bi-joystick"></i></span>
+                    <h5>Gaming</h5>
+                    <p class="text-muted mb-0">Deep reinforcement learning surpassed human play in chess, Go and StarCraft II.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card-dark h-100 text-center">
+                    <span class="card-icon"><i class="bi bi-car-front"></i></span>
+                    <h5>Autonomous vehicles</h5>
+                    <p class="text-muted mb-0">Merging, lane keeping and emergency braking reward-shaped from sensors.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card-dark h-100 text-center">
+                    <span class="card-icon"><i class="bi bi-box-seam"></i></span>
+                    <h5>Logistics</h5>
+                    <p class="text-muted mb-0">Routing and scheduling that adapts to traffic and demand &mdash; the motivation for this project.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card-dark h-100 text-center">
+                    <span class="card-icon"><i class="bi bi-lightning-charge"></i></span>
+                    <h5>Energy</h5>
+                    <p class="text-muted mb-0">Battery management and demand response in smart grids.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card-dark h-100 text-center">
+                    <span class="card-icon"><i class="bi bi-graph-up-arrow"></i></span>
+                    <h5>Finance</h5>
+                    <p class="text-muted mb-0">Trading strategies tuned against a risk-adjusted reward.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-dark mb-4">
+        <span class="section-badge"># 7. Advantages</span>
+        <h3 class="section-title">Strengths</h3>
+        <ul class="features-list">
+            <li><strong>Optimises the real objective</strong> &mdash; it maximises long-term return instead of minimising a proxy error.</li>
+            <li><strong>No labelled data required</strong> &mdash; rewards are usually far cheaper to obtain than annotations.</li>
+            <li><strong>Discovers non-obvious strategies</strong> &mdash; creative solutions nobody programmed explicitly.</li>
+            <li><strong>Adapts to the environment</strong> &mdash; a dynamic policy, not a frozen rule set.</li>
+            <li><strong>Handles sequential trade-offs</strong> &mdash; it plans several steps ahead using &gamma;.</li>
+        </ul>
+    </div>
+
+    <div class="card-dark mb-4">
+        <span class="section-badge"># 8. Disadvantages</span>
+        <h3 class="section-title">Limitations</h3>
+        <ul class="features-list">
+            <li><strong>Expensive to train</strong> &mdash; millions of interactions may be needed before performance stabilises.</li>
+            <li><strong>Sample inefficient</strong> &mdash; every episode restarts from the same grid, unlike supervised learning.</li>
+            <li><strong>Reward design is hard</strong> &mdash; a badly shaped reward produces exploitable, unintended behaviour.</li>
+            <li><strong>No guaranteed optimum</strong> &mdash; tabular Q-Learning converges under mild assumptions; deep variants do not.</li>
+            <li><strong>Unsafe exploration</strong> &mdash; random moves are unacceptable in robotics or medicine.</li>
+            <li><strong>Hyperparameter sensitivity</strong> &mdash; &alpha;, &gamma;, &epsilon; and the decay rate interact strongly.</li>
+        </ul>
+    </div>
+
+    <div class="card-dark mb-4">
+        <span class="section-badge"># 9. Reward</span>
+        <h3 class="section-title">Reward design, the heart of the problem</h3>
+        <p>
+            The reward is the only signal the agent receives, so its design determines what the agent becomes.
+            In our grid each outcome is given a distinct value:
+        </p>
+        <div class="table-responsive">
+            <table class="table table-dark table-dark-custom">
+                <thead>
+                    <tr><th>Event</th><th>Reward</th><th>Intent</th></tr>
+                </thead>
+                <tbody>
+                    {% for label, value in rewards %}
+                    <tr>
+                        <td>{{ label }}</td>
+                        <td><code>{{ value }}</code></td>
+                        <td class="text-muted">{% if value > 0 %}The only positive outcome, so it dominates every other signal.{% elif value == -1 %}A small cost that discourages dawdling and rewards direct routes.{% else %}A severe penalty that makes walls and danger effectively impassable once learned.{% endif %}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="alert alert-warning mt-3">
+            <strong>Reward shaping warning.</strong> Because the agent maximises whatever it is given, optimising a
+            proxy can produce behaviour that satisfies the proxy while defeating the real goal. This is the
+            <em>wireheading</em> problem, and it is the single most common failure mode in deployed RL.
+        </div>
+    </div>
+
+    <div class="card-dark mb-4">
+        <span class="section-badge"># 10. Exploration vs Exploitation</span>
+        <h3 class="section-title">The central dilemma</h3>
+        <p>
+            The agent faces an irreducible uncertainty. <strong>Exploitation</strong> means choosing the action that is
+            known to be best, which is profitable but never discovers anything better.
+            <strong>Exploration</strong> means trying uncertain actions, which costs reward now but may reveal a much
+            better option later. Our agent resolves this with an <strong>&epsilon;-greedy</strong> policy:
+        </p>
+        <ul class="features-list">
+            <li>With probability <code>&epsilon;</code> take a <strong>random</strong> action &mdash; explore.</li>
+            <li>Otherwise take the <strong>highest Q-value</strong> action &mdash; exploit.</li>
+            <li>Decay <code>&epsilon;</code> from <code>{{ epsilon_start }}</code> down to <code>{{ epsilon_min }}</code>
+                so exploration is broad early and vanishes as the policy sharpens.</li>
+        </ul>
+        <div class="code-snippet">
+            &epsilon;<sub>t+1</sub> = max(&epsilon;<sub>min</sub>, &epsilon;<sub>t</sub> &times; {{ epsilon_decay }})
+        </div>
+        <p>
+            Keeping a small floor at <code>&epsilon;<sub>min</sub></code> rather than dropping it to zero matters:
+            it lets the agent recover if the environment changes slightly.
+        </p>
+    </div>
+
+    <div class="card-dark mb-4">
+        <span class="section-badge"># 11. Q-Learning</span>
+        <h3 class="section-title">Q-Learning: learning the value of each action</h3>
+        <p>
+            <strong>Q-Learning</strong> is the canonical <strong>off-policy</strong>, <strong>model-free</strong>,
+            <strong>value-based</strong> algorithm and is the algorithm behind our application.
+            It maintains a table <code>Q(s,a)</code> and applies the Bellman optimality update after every
+            transition:
+        </p>
+        <div class="code-snippet">
+            Q(s,a) &larr; Q(s,a) + &alpha; &middot; [ r + &gamma; &middot; max<sub>a'</sub> Q(s',a') &minus; Q(s,a) ]
+        </div>
+        <p>
+            Because the maximum is taken over the <em>next</em> state while the behaviour policy is exploratory,
+            Q-Learning learns the <strong>optimal</strong> policy even though it acts greedily only part of the time.
+            The estimate converges to the true <code>Q*</code> for tabular problems given enough episodes and a
+            decaying step size. Our grid has only 80 reachable states, so the exact tabular solution exists &mdash;
+            but we approximate it with a linear model so the implementation scales beyond toy grids.
+        </p>
+        <div class="alert alert-info">
+            <strong>Reward scale matters.</strong> Reaching the target gives <code>+100</code> while a normal move
+            costs <code>-1</code>. This ratio is what makes the goal reachable in practice: with a smaller goal
+            reward the discounted return of wandering can rival that of arriving, and the agent fails to converge.
+        </div>
+    </div>
+
+    <div class="card-dark mb-4">
+        <span class="section-badge"># 12. Q Function</span>
+        <h3 class="section-title">The Q function</h3>
+        <p>
+            <code>Q(s,a)</code> is the expected <strong>discounted return</strong> obtained by acting <code>a</code> in
+            state <code>s</code> and following the optimal policy afterwards:
+        </p>
+        <div class="code-snippet">
+            Q*(s,a) = E [ r + &gamma; &middot; r' + &gamma;<sup>2</sup> &middot; r'' + ... ]
+        </div>
+        <p>
+            Two properties make it useful. It is <strong>action-specific</strong>, so it can rank the four moves from a
+            cell, and it is <strong>recursive</strong>, because the value of moving somewhere is defined in terms of the
+            value of what is reachable from there. Once <code>Q</code> is accurate, the policy is simply
+            <code>&pi;(s) = argmax<sub>a</sub> Q(s,a)</code>.
+        </p>
+        <p>
+            In the <a class="link-chip" href="{{ url_for('rl_application') }}">RL Application</a> page the agent's
+            learned <code>Q</code> table is printed in full, one row per reachable cell, with the four action values
+            and the greedy choice highlighted.
+        </p>
+    </div>
+
+    <div class="card-dark mb-4">
+        <span class="section-badge"># 13. Epsilon</span>
+        <h3 class="section-title">Exploration rate</h3>
+        <p>
+            <code>&epsilon;</code> &isin; <code>[0,1]</code> is the probability of acting randomly. The extremes are
+            both useless: <code>&epsilon; = 1</code> never exploits, while <code>&epsilon; = 0</code> never discovers
+            the better route and can lock the agent into a poor local optimum &mdash; it will bounce between two cells
+            forever if those happen to be the initial best.
+        </p>
+        <p>
+            Our schedule starts at <code>{{ epsilon_start }}</code> &mdash; pure random exploration, so the agent sees
+            the whole grid &mdash; and decays geometrically by <code>{{ epsilon_decay }}</code> per episode until it
+            reaches the floor of <code>{{ epsilon_min }}</code>.
+        </p>
+        <table class="table table-dark table-dark-custom">
+            <thead><tr><th>Episode</th><th>Approximate &epsilon;</th><th>Behaviour</th></tr></thead>
+            <tbody>
+                <tr><td>1</td><td>1.000</td><td>Completely random, the whole map is explored.</td></tr>
+                <tr><td>50</td><td>0.364</td><td>Still mostly exploratory.</td></tr>
+                <tr><td>100</td><td>0.133</td><td>Exploitation begins to dominate.</td></tr>
+                <tr><td>195</td><td>0.020 &rarr; floored at {{ epsilon_min }}</td><td>Nearly greedy; Q-values guide the path.</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card-dark mb-4">
+        <span class="section-badge"># 14. Gamma</span>
+        <h3 class="section-title">Discount factor</h3>
+        <p>
+            <code>&gamma;</code> &isin; <code>[0,1]</code> weighs immediate reward against future reward.
+            <code>&gamma; = 0</code> makes the agent purely myopic; values close to <code>1</code> make it
+            far-sighted and willing to accept short-term pain for a better eventual route. Our application uses
+            <code>&gamma; = {{ gamma }}</code>, which balances the two on a grid of this size.
+        </p>
+        <div class="info-box">
+            With <code>&gamma; = 0.95</code> a reward received 10 steps ahead is still worth
+            <code>0.95<sup>10</sup> &asymp; 0.60</code> of its face value, so long detours remain attractive
+            as long as they are genuinely safer.
+        </div>
+    </div>
+
+    <div class="card-dark mb-4">
+        <span class="section-badge"># 15. Alpha</span>
+        <h3 class="section-title">Learning rate</h3>
+        <p>
+            <code>&alpha;</code> controls how much of each new estimate is absorbed:
+            large values adapt quickly but oscillate around the true value, small values are stable but slow.
+            We use a constant <code>&alpha; = {{ learning_rate }}</code>, which is appropriate because we average
+            over hundreds of episodes rather than doing a single online fit.
+        </p>
+        <p>
+            In this project <code>&alpha;</code> is the <code>eta0</code> of the <code>SGDRegressor</code> that
+            implements the update.
+        </p>
+    </div>
+
+    <div class="card-dark mb-4">
+        <span class="section-badge"># 16. Episode</span>
+        <h3 class="section-title">Episodes and termination</h3>
+        <p>
+            An <strong>episode</strong> is one complete run from the starting cell until termination. On our grid an
+            episode ends when the agent either <strong>reaches the target</strong> (a terminal state, treated as
+            absorbing with zero future value) or <strong>exhausts the step budget</strong> of
+            <code>{{ max_steps }}</code> moves. Without a step cap an exploratory agent could wander forever.
+        </p>
+        <ul class="features-list">
+            <li><strong>Start state</strong> <code>A</code>, reset at the beginning of every episode.</li>
+            <li><strong>Terminal state</strong> <code>T</code>; the target is absorbing, so no update looks past it.</li>
+            <li><strong>Truncation</strong> at <code>{{ max_steps }}</code> steps, counted as a timeout rather than a real end.</li>
+            <li><strong>{{ episodes }}</strong> episodes per training run, enough for the Q-values to stabilise.</li>
+        </ul>
+    </div>
+
+    <div class="card-dark mb-4">
+        <span class="section-badge"># 17. Environment</span>
+        <h3 class="section-title">The 10&times;10 environment</h3>
+        <p>
+            The environment is a 10&times;10 grid of 100 cells with a fixed composition, so the reward landscape is
+            identical on every run:
+        </p>
+        <div class="table-responsive">
+            <table class="table table-dark table-dark-custom">
+                <thead><tr><th>Symbol</th><th>Meaning</th><th>Cells</th><th>Effect on the agent</th></tr></thead>
+                <tbody>
+                    {% for row in environment %}
+                    <tr>
+                        <td><code class="fs-5">{{ row.symbol }}</code></td>
+                        <td>{{ row.meaning }}</td>
+                        <td>{{ row.cells }}</td>
+                        <td class="text-muted">{{ row.effect }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <p class="mt-3">
+            The agent has exactly four actions: <code>Up</code>, <code>Down</code>, <code>Left</code> and
+            <code>Right</code>. Walls and the grid boundary cannot be crossed. Danger zones <em>can</em> be entered,
+            but at a heavy cost &mdash; which forces the agent to reason about safety instead of merely finding the
+            shortest line. A penalty-free route from <code>A</code> to <code>T</code> always exists.
+        </p>
+    </div>
+
+    <div class="card-dark mb-4">
+        <span class="section-badge"># 18. State</span>
+        <h3 class="section-title">State representation</h3>
+        <p>
+            A <strong>state</strong> is everything the agent needs to decide its next move. Our environment is
+            <strong>fully observable</strong> and <strong>memoryless</strong>: knowing the current cell tells the agent
+            everything, and the Markov property holds, so state = position.
+        </p>
+        <div class="code-snippet">
+            state = (row, column) &nbsp;&nbsp;&rarr;&nbsp;&nbsp; s = row &times; 10 + column &nbsp;&nbsp;&rarr;&nbsp;&nbsp; 0 &le; s &lt; 100
+        </div>
+        <p>
+            Two states are excluded from learning: the 20 wall cells, which are unreachable and therefore have no
+            meaningful value. That leaves <strong>80 states</strong> and, with four actions each, a table of
+            <strong>320 Q-values</strong>.
+        </p>
+        <p>
+            In our implementation each <code>(state, action)</code> pair is encoded as a one-hot vector of length 400, and
+            <code>Q(s,a)</code> is the model's output for that vector. This keeps the mapping general: it is exactly a
+            tabular Q-table expressed as a linear model, which is the standard way to extend Q-Learning to state spaces
+            too large to store.
+        </p>
+    </div>
+
+    <div class="card-dark mb-4">
+        <span class="section-badge"># 19. Action</span>
+        <h3 class="section-title">Action space</h3>
+        <p>
+            The action space is <strong>discrete</strong> and <strong>fixed</strong>: four moves are available from every
+            cell, with no rotation or variable length. Invalid actions are still offered to the agent rather than
+            filtered out, so it must <em>learn</em> that bumping into walls is costly. This keeps the environment
+            Markovian; removing illegal moves would leak information the agent should have to discover.
+        </p>
+        <div class="table-responsive">
+            <table class="table table-dark table-dark-custom">
+                <thead><tr><th>Index</th><th>Action</th><th>Offset</th><th>Notes</th></tr></thead>
+                <tbody>
+                    <tr><td>0</td><td><code>Up</code></td><td><code>(&minus;1, 0)</code></td><td class="text-muted">Blocked from row 0.</td></tr>
+                    <tr><td>1</td><td><code>Down</code></td><td><code>(+1, 0)</code></td><td class="text-muted">Blocked from row 9.</td></tr>
+                    <tr><td>2</td><td><code>Left</code></td><td><code>(0, &minus;1)</code></td><td class="text-muted">Blocked from column 0.</td></tr>
+                    <tr><td>3</td><td><code>Right</code></td><td><code>(0, +1)</code></td><td class="text-muted">Blocked from column 9.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card-dark mb-4">
+        <span class="section-badge">Algorithm in context</span>
+        <h3 class="section-title">Everything together</h3>
+        <p>
+            Our agent is <strong>Q-Learning</strong>: an off-policy, model-free, value-based, tabular-approximated
+            algorithm using an <strong>&epsilon;-greedy</strong> policy with <code>&epsilon;</code> decaying from
+            <code>{{ epsilon_start }}</code> to <code>{{ epsilon_min }}</code>, a discount factor of
+            <code>&gamma; = {{ gamma }}</code>, a learning rate of <code>&alpha; = {{ learning_rate }}</code>, over
+            <code>{{ episodes }}</code> episodes capped at <code>{{ max_steps }}</code> steps each. The
+            <code>Q</code>-function is approximated by <code>SGDRegressor</code> over one-hot
+            <code>(state, action)</code> features and updated online with <code>partial_fit</code>.
+        </p>
+        <div class="alert alert-success">
+            <strong>Ready to try it?</strong> The
+            <a class="link-chip" href="{{ url_for('rl_application') }}">RL Application</a> page exposes all of it:
+            the grid, the <code>[ Train Agent ]</code> button, the learned route, the step-by-step trace and the
+            complete Q-table.
+        </div>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"></script>
+{% endblock %}
