@@ -1,6 +1,8 @@
 import os
 import io
 import base64
+import html
+import traceback
 import numpy as np
 import pandas as pd
 import matplotlib
@@ -597,6 +599,15 @@ def rl_concepts():
 @app.route('/reinforcement-learning/application', methods=['GET', 'POST'])
 @app.route('/ml/reinforcement-learning/application', methods=['GET', 'POST'])
 def rl_application():
+    try:
+        return _rl_application_view()
+    except Exception:
+        detail = traceback.format_exc()
+        app.logger.error('Reinforcement Learning page failed:\n%s', detail)
+        return ('<h1>Error interno</h1><pre>' + html.escape(detail) + '</pre>', 500)
+
+
+def _rl_application_view():
     problems = ql.validate()
     results = None
     evaluation = None
