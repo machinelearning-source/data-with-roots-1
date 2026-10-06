@@ -1,0 +1,316 @@
+{% extends "base.html" %}
+{% block title %}Reinforcement Learning - Application{% endblock %}
+{% block content %}
+
+<header class="hero-section">
+    <div class="container">
+        <span class="hero-tag">Reinforcement Learning &gt; Part 2 of 2</span>
+        <h1>Reinforcement Learning <span>Application</span></h1>
+        <p>Q-Learning on a 10&times;10 grid &mdash; train the agent and watch it discover the safe route to the target.</p>
+    </div>
+</header>
+
+<div class="container mt-5 mb-section">
+
+    <div class="row g-4 mb-4">
+        <div class="col-md-6">
+            <div class="card-dark h-100">
+                <span class="section-badge">Part 2 of 2</span>
+                <h3 class="section-title">The Application</h3>
+                <p>
+                    Everything from <a class="link-chip" href="{{ url_for('rl_concepts') }}">RL Concepts</a> is now
+                    running. The grid below is the environment; press <strong>[ Train Agent ]</strong> to run
+                    <code>{{ episodes }}</code> episodes of Q-Learning and see the policy it converges to.
+                </p>
+                <ul class="features-list">
+                    <li>Environment: 10&times;10 grid, 100 cells, 4 actions.</li>
+                    <li>Algorithm: Q-Learning with <code>SGDRegressor</code> via <code>partial_fit</code>.</li>
+                    <li>Policy: &epsilon;-greedy, decaying from {{ epsilon_start }} to {{ epsilon_min }}.</li>
+                    <li>Seeded run, so the reported numbers are reproducible.</li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card-dark h-100">
+                <span class="section-badge">Hyperparameters</span>
+                <h3 class="section-title">Configuration</h3>
+                <table class="table table-dark table-dark-custom mb-0">
+                    <tbody>
+                        <tr><td>Episodes</td><td class="text-end"><code>{{ episodes }}</code></td></tr>
+                        <tr><td>Max steps per episode</td><td class="text-end"><code>{{ max_steps }}</code></td></tr>
+                        <tr><td>Learning rate (&alpha;)</td><td class="text-end"><code>{{ learning_rate }}</code></td></tr>
+                        <tr><td>Discount factor (&gamma;)</td><td class="text-end"><code>{{ gamma }}</code></td></tr>
+                        <tr><td>&epsilon; start</td><td class="text-end"><code>{{ epsilon_start }}</code></td></tr>
+                        <tr><td>&epsilon; decay</td><td class="text-end"><code>{{ epsilon_decay }}</code></td></tr>
+                        <tr><td>&epsilon; min</td><td class="text-end"><code>{{ epsilon_min }}</code></td></tr>
+                        <tr><td>Seed</td><td class="text-end"><code>{{ seed }}</code></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-dark mb-4">
+        <span class="section-badge"># 1. Environment</span>
+        <h3 class="section-title">The 10&times;10 grid</h3>
+        <p>
+            This is the environment exactly as defined in the engine. Each cell is one state; the highlighted cells
+            {% if path %}
+            mark the route the trained agent walks
+            {% else %}
+            will be highlighted once the agent is trained
+            {% endif %}.
+        </p>
+
+        <div class="graph-container">
+            <table class="rl-grid mx-auto">
+                <tbody>
+                    {% for row in grid %}
+                    <tr>
+                        {% for cell in row %}
+                        <td class="rl-cell rl-{{ cell.class_name }}{% if cell.on_path %} rl-on-path{% endif %}"
+                            title="{{ cell.label }} ({{ cell.row }},{{ cell.col }})">
+                            {{ cell.char }}
+                        </td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="row g-3 mt-3">
+            <div class="col-6 col-md-3"><span class="badge badge-soft-green">A</span> Agent start position</div>
+            <div class="col-6 col-md-3"><span class="badge badge-grad">T</span> Target, the only positive reward</div>
+            <div class="col-6 col-md-3"><span class="badge badge-soft">o</span> Free path cell, cost {{ reward_step }}</div>
+            <div class="col-6 col-md-3"><span class="badge badge-soft-red">D</span> Danger zone, cost {{ reward_danger }}</div>
+            <div class="col-6 col-md-3"><span class="badge badge-soft-amber">#</span> Wall, blocked, cost {{ reward_wall }}</div>
+            {% if path %}
+            <div class="col-6 col-md-3"><span class="badge badge-soft-purple">Learned path</span> {{ path|length }} cells visited</div>
+            {% endif %}
+        </div>
+
+        <div class="table-responsive mt-4">
+            <table class="table table-dark table-dark-custom">
+                <thead><tr><th>Symbol</th><th>Meaning</th><th>Cells</th><th>Reward</th></tr></thead>
+                <tbody>
+                    {% for row in environment %}
+                    <tr>
+                        <td><code class="fs-5">{{ row.symbol }}</code></td>
+                        <td>{{ row.meaning }}</td>
+                        <td>{{ row.cells }}</td>
+                        <td><code>{{ row.reward }}</code></td>
+                    </tr>
+                    {% endfor %}
+                    <tr class="fw-bold">
+                        <td colspan="2">Total</td>
+                        <td>{{ total_cells }}</td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card-dark mb-4">
+        <span class="section-badge"># 2. Train the agent</span>
+        <h3 class="section-title">[ Train Agent ]</h3>
+        {% if error %}
+        <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
+        <p>
+            Pressing the button runs the training loop: for each episode the agent restarts at <code>A</code> and
+            moves &epsilon;-greedily, updating its Q-values with
+            <code>r + &gamma; &middot; max Q(s',&middot;)</code> after every step. The run is seeded, so the same
+            button always reproduces the same learning curve and the same learned route.
+        </p>
+        <form method="post" action="{{ url_for('rl_application') }}">
+            <button type="submit" class="btn btn-grad btn-lg">
+                <i class="bi bi-cpu"></i> Train Agent
+            </button>
+        </form>
+        <div class="form-text mt-2">
+            Runs {{ episodes }} episodes of Q-Learning. About 8 seconds locally; the free Render tier can take
+            longer because it shares a single slow CPU, so the page may look busy for up to a minute.
+        </div>
+    </div>
+
+    {% if results %}
+    <div class="card-dark mb-4">
+        <span class="section-badge"># 3. Results</span>
+        <h3 class="section-title">Training results</h3>
+        <p>
+            Every figure below is read from the model that was just trained, not hard-coded. The values come from
+            <code>ql.train()</code> and the traced policy in <code>ql.evaluate()</code>.
+        </p>
+        <div class="row g-3">
+            <div class="col-6 col-lg-3">
+                <div class="stat-card text-center">
+                    <span class="section-badge">Total episodes</span>
+                    <h3 class="mb-0">{{ results.episodes }}</h3>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="stat-card text-center">
+                    <span class="section-badge">Successful episodes</span>
+                    <h3 class="mb-0 text-success">{{ results.successes }}</h3>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="stat-card text-center">
+                    <span class="section-badge">Success rate</span>
+                    <h3 class="mb-0">{{ '%.1f'|format(results.success_rate) }}%</h3>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="stat-card text-center">
+                    <span class="section-badge">Average reward</span>
+                    <h3 class="mb-0">{{ '%.2f'|format(results.average_reward) }}</h3>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="stat-card text-center">
+                    <span class="section-badge">Initial &epsilon;</span>
+                    <h3 class="mb-0">{{ results.epsilon_start }}</h3>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="stat-card text-center">
+                    <span class="section-badge">Final &epsilon;</span>
+                    <h3 class="mb-0">{{ '%.4f'|format(results.final_epsilon) }}</h3>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="stat-card text-center">
+                    <span class="section-badge">Final evaluation movements</span>
+                    <h3 class="mb-0">{{ evaluation.movements }}</h3>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="stat-card text-center">
+                    <span class="section-badge">Final evaluation reward</span>
+                    <h3 class="mb-0">{{ '%.2f'|format(evaluation.total_reward) }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <h5 class="section-title">Reward per episode</h5>
+            <p class="text-muted">
+                The curve rises as the agent discovers the route: early episodes end in walls and danger zones,
+                late episodes reach the target almost every time.
+            </p>
+            <img src="data:image/png;base64,{{ reward_chart }}"
+                 alt="Average reward per episode during training"
+                 class="img-fluid rounded w-100" style="background:#fff">
+        </div>
+
+        <div class="mt-4">
+            <h5 class="section-title">Exploration rate over training</h5>
+            <p class="text-muted">
+                &epsilon; starts at {{ results.epsilon_start }} and decays by {{ results.epsilon_decay }} per episode
+                until it reaches the floor of {{ results.epsilon_min }}.
+            </p>
+            <img src="data:image/png;base64,{{ epsilon_chart }}" alt="Epsilon decay over episodes"
+                 class="img-fluid rounded w-100" style="background:#fff">
+        </div>
+    </div>
+
+    <div class="card-dark mb-4">
+        <span class="section-badge"># 4. Evaluation</span>
+        <h3 class="section-title">Final evaluation, step by step</h3>
+        {% if evaluation.goal_reached %}
+        <div class="alert alert-success">
+            <strong>The agent reached the target.</strong> Following the greedy policy (pure exploitation,
+            &epsilon; = 0) it crossed the grid in <strong>{{ evaluation.movements }}</strong> moves for a total
+            reward of <strong>{{ '%.2f'|format(evaluation.total_reward) }}</strong>, entering
+            <strong>{{ evaluation.danger_hits }}</strong> danger zones and wasting
+            <strong>{{ evaluation.blocked_moves }}</strong> moves on blocked cells.
+        </div>
+        {% else %}
+        <div class="alert alert-warning">
+            <strong>The agent did not reach the target</strong> within {{ evaluation.movements }} moves.
+            Press <strong>[ Train Agent ]</strong> again or raise the number of episodes.
+        </div>
+        {% endif %}
+
+        <p>
+            The optimal route from <code>(0,0)</code> to <code>(9,9)</code> is 18 moves, so
+            {{ evaluation.movements }} moves means the agent has
+            {% if evaluation.movements <= 18 %}found a shortest safe path{% else %}not yet reached the optimum{% endif %}.
+        </p>
+
+        <div class="table-responsive">
+            <table class="table table-dark table-dark-custom">
+                <thead>
+                    <tr><th>#</th><th>State</th><th>Action</th><th>Next state</th><th>Cell entered</th><th>Reward</th></tr>
+                </thead>
+                <tbody>
+                    {% for row in evaluation.steps %}
+                    <tr class="{% if row.reward > 0 %}table-success{% elif row.cell == 'Danger Zone' %}table-warning{% endif %}">
+                        <td>{{ row.step }}</td>
+                        <td><code>{{ row.state }}</code></td>
+                        <td><strong>{{ row.action }}</strong></td>
+                        <td><code>{{ row.next_state }}</code></td>
+                        <td>{{ row.cell }}</td>
+                        <td><code>{{ '%+.1f'|format(row.reward) }}</code></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card-dark mb-4">
+        <span class="section-badge"># 5. Q-Table</span>
+        <h3 class="section-title">Learned Q-values</h3>
+        <p>
+            One row per reachable state, with the estimated return of each of the four actions. The
+            <strong>greedy action</strong> is the one with the highest value and is what the agent follows once
+            training finishes.
+        </p>
+        <div class="table-responsive">
+            <table class="table table-dark table-dark-custom">
+                <thead>
+                    <tr>
+                        <th>State</th><th>Cell</th>
+                        <th class="text-end">Up</th><th class="text-end">Down</th>
+                        <th class="text-end">Left</th><th class="text-end">Right</th>
+                        <th>Greedy action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in qtable %}
+                    <tr{% if row.state == start_state %} style="background:rgba(99,102,241,0.25)"{% endif %}>
+                        <td><code>{{ row.state }}</code></td>
+                        <td><code>{{ row.cell }}</code></td>
+                        <td class="text-end{% if row.best == 'Up' %} text-warning fw-bold{% endif %}">{{ '%.2f'|format(row.up) }}</td>
+                        <td class="text-end{% if row.best == 'Down' %} text-warning fw-bold{% endif %}">{{ '%.2f'|format(row.down) }}</td>
+                        <td class="text-end{% if row.best == 'Left' %} text-warning fw-bold{% endif %}">{{ '%.2f'|format(row.left) }}</td>
+                        <td class="text-end{% if row.best == 'Right' %} text-warning fw-bold{% endif %}">{{ '%.2f'|format(row.right) }}</td>
+                        <td>
+                            {% if row.best %}<strong>{{ row.best }}</strong>{% else %}&mdash;{% endif %}
+                            {% if row.best_value is not none and row.best_value <= 0 %}
+                            <span class="badge badge-soft-red ms-1" title="No positive return: this state is a trap or a dead end">no progress</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="info-box mt-3">
+            {{ qtable|length }} reachable states &times; 4 actions = <strong>{{ qtable|length * 4 }}</strong>
+            learned Q-values. The 20 wall cells are excluded because they can never be entered.<br>
+            The <strong>target</strong> shows <code>0.00</code> on purpose: it is a terminal state, so the
+            episode ends on arrival and no update is ever applied from it.
+            States tagged <span class="badge badge-soft-red">no progress</span> have no action with a positive
+            return &mdash; they are traps the agent only crosses to escape.
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"></script>
+{% endblock %}

@@ -14,6 +14,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import (accuracy_score, precision_score, recall_score,
                              f1_score, confusion_matrix)
 import kmeans_ml as km
+import qlearning_rl as ql
 
 app = Flask(__name__)
 
@@ -513,6 +514,150 @@ def kmeans_classification():
         **result,
         error=error,
         prediction=prediction,
+    )
+
+
+def _rl_count_for(symbol, counts):
+    """Number of cells of one environment symbol."""
+    return {
+        ql.CELL_AGENT: counts['agent'],
+        ql.CELL_TARGET: counts['target'],
+        ql.CELL_PATH: counts['path'],
+        ql.CELL_WALL: counts['wall'],
+        ql.CELL_DANGER: counts['danger'],
+    }[symbol]
+
+
+def _rl_reward_for(symbol):
+    """Human readable reward for one environment symbol."""
+    if symbol == ql.CELL_TARGET:
+        return '+%.0f' % ql.REWARD_GOAL
+    if symbol == ql.CELL_PATH:
+        return '%+.0f' % ql.REWARD_STEP
+    if symbol == ql.CELL_WALL:
+        return '%+.0f' % ql.REWARD_WALL
+    if symbol == ql.CELL_DANGER:
+        return '%+.0f' % ql.REWARD_DANGER
+    return '&mdash;'
+
+
+def _rl_base_context():
+    counts = ql.counts()
+    return {
+        'episodes': ql.EPISODES,
+        'max_steps': ql.MAX_STEPS,
+        'learning_rate': ql.LEARNING_RATE,
+        'gamma': ql.GAMMA,
+        'epsilon_start': ql.EPSILON_START,
+        'epsilon_decay': ql.EPSILON_DECAY,
+        'epsilon_min': ql.EPSILON_MIN,
+        'seed': ql.SEED,
+        'rewards': ql.REWARD_TABLE,
+        'environment': [{'symbol': s, 'meaning': m, 'cells': _rl_count_for(s, counts),
+                         'effect': e, 'reward': _rl_reward_for(s)}
+                        for s, m, e in ql.ENVIRONMENT_TABLE],
+        'total_cells': counts['total'],
+        'reward_step': '%+.0f' % ql.REWARD_STEP,
+        'reward_wall': '%+.0f' % ql.REWARD_WALL,
+        'reward_danger': '%+.0f' % ql.REWARD_DANGER,
+    }
+
+
+def _rl_chart(series, title, ylabel):
+    """Render a training curve as a base64 PNG for the results section."""
+    fig, ax = plt.subplots(figsize=(9, 3.2))
+    ax.plot(np.arange(1, len(series) + 1), series, color='#4f46e5', linewidth=1.6)
+    ax.set_title(title, fontsize=11)
+    ax.set_xlabel('Episode')
+    ax.set_ylabel(ylabel)
+    ax.grid(alpha=0.25, linestyle='--', linewidth=0.6)
+    fig.tight_layout()
+    buffer = io.BytesIO()
+    fig.savefig(buffer, format='png', dpi=110)
+    plt.close(fig)
+    return base64.b64encode(buffer.getvalue()).decode('utf-8')
+
+
+def _rl_reward_curve(res):
+    """Smooth the per-episode reward with a moving average so the trend reads."""
+    rewards = np.asarray(res['rewards'], dtype=float)
+    if rewards.size == 0:
+        return rewards
+    window = max(1, rewards.size // 50)
+    kernel = np.ones(window) / window
+    return np.convolve(rewards, kernel, mode='valid')
+
+
+@app.route('/reinforcement-learning/concepts')
+@app.route('/ml/reinforcement-learning/concepts')
+def rl_concepts():
+    return render_template('rl_concepts.html', **_rl_base_context())
+
+
+@app.route('/reinforcement-learning/application', methods=['GET', 'POST'])
+@app.route('/ml/reinforcement-learning/application', methods=['GET', 'POST'])
+def rl_application():
+    problems = ql.validate()
+    results = None
+    evaluation = None
+    qtable = []
+    reward_chart = None
+    epsilon_chart = None
+    grid = []
+    path = []
+
+    if request.method == 'POST':
+        problems = ql.validate()
+        if not problems:
+            try:
+                results = ql.train()
+                evaluation = ql.evaluate(results['model'], results['max_steps'])
+                for row in ql.q_table(results['model']):
+                    values = {'Up': row['up'], 'Down': row['down'],
+                              'Left': row['left'], 'Right': row['right']}
+                    best_value = max(values.values())
+                    row['best_value'] = best_value
+                    row['best'] = next((name for name, value in values.items()
+                                        if value >= best_value - 1e-9), None)
+                    qtable.append(row)
+                reward_chart = _rl_chart(_rl_reward_curve(results),
+                                         'Reward per episode (moving average)',
+                                         'Total episode reward')
+                epsilon_chart = _rl_chart(results['epsilons'],
+                                           'Epsilon decay during training', 'Epsilon')
+                path = evaluation['path']
+            except Exception as exc:  # pragma: no cover - defensive UI guard
+                results = None
+                problems = ['Training failed: %s' % exc]
+
+    if not path:
+        grid = ql.render_grid()
+    else:
+        grid = ql.render_grid(path)
+    for row_index, row in enumerate(grid):
+        for col_index, cell in enumerate(row):
+            cell['row'] = row_index
+            cell['col'] = col_index
+            cell['class_name'] = {
+                ql.CELL_AGENT: 'agent',
+                ql.CELL_TARGET: 'target',
+                ql.CELL_WALL: 'wall',
+                ql.CELL_DANGER: 'danger',
+            }.get(cell['char'], 'path')
+
+    error = '; '.join(problems) if problems else None
+    return render_template(
+        'rl_application.html',
+        **_rl_base_context(),
+        results=results,
+        evaluation=evaluation,
+        qtable=qtable,
+        grid=grid,
+        path=path,
+        reward_chart=reward_chart,
+        epsilon_chart=epsilon_chart,
+        start_state=ql.start_state(),
+        error=error,
     )
 
 
